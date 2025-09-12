@@ -1,0 +1,8 @@
+services:
+  sdlaboratorio1:
+    image: sdlaboratorio1
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 5672:5672
