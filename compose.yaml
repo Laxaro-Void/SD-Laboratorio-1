@@ -28,6 +28,25 @@ services:
     networks:
       - appnet
 
+  lester:
+    build:
+      context: .
+      dockerfile: Lester/Dockerfile
+    container_name: lester
+    ports:
+      - "50051:50051"
+    networks:
+      - appnet
+
+  michael:
+    build:
+      context: .           
+      dockerfile: Michael/Dockerfile
+    depends_on:
+      - lester
+    networks:
+      - appnet
+
 networks:
   appnet:
     driver: bridge
