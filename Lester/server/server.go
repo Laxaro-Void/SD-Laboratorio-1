@@ -26,9 +26,9 @@ func (s *LesterServer) SolicitarOferta(ctx context.Context, req *pb.Solicitud) (
 		return &pb.Oferta{Disponible: false}, nil
 	}
 
-	// Espera de 1 segundo
+	// Espera de 10 segundos
 	if s.rechazos >= 3 {
-		time.Sleep(1 * time.Second)
+		time.Sleep(10 * time.Second)
 		s.rechazos = 0
 	}
 

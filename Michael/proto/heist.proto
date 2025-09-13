@@ -6,7 +6,7 @@ service HeistService {
 }
 
 message Solicitud {
-  string mensaje = 1; // p.ej. "Dame un trabajo"
+  string mensaje = 1;
 }
 
 message Oferta {
