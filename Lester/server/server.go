@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"math/rand"
 	"sync"
@@ -56,4 +57,21 @@ func (s *LesterServer) AceptarOferta(ctx context.Context, dec *pb.Decision) (*pb
 	}
 	s.rechazos++
 	return &pb.Respuesta{Mensaje: "Oferta rechazada"}, nil
+}
+
+func (s *LesterServer) PagarParte(ctx context.Context, monto *pb.Monto) (*pb.Confirmacion, error) {
+
+	// Verificar si el monto es válido (>0)
+	if monto.Cantidad <= 0 {
+		return &pb.Confirmacion{
+			Correcto:  false,
+			Respuesta: "No recibi el pago correcto >:(",
+		}, nil
+	}
+
+	msg := fmt.Sprintf("Un placer hacer negocios. AHORA QUIEN DIJO TEQUILA!!")
+	return &pb.Confirmacion{
+		Correcto:  true,
+		Respuesta: msg,
+	}, nil
 }

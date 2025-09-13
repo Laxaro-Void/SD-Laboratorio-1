@@ -7,6 +7,7 @@ option go_package = "/;pb";
 service HeistService {
   rpc SolicitarOferta (Solicitud) returns (Oferta);
   rpc AceptarOferta (Decision) returns (Respuesta);
+  rpc PagarParte (Monto) returns (Confirmacion);
 }
 
 message Solicitud {
@@ -27,4 +28,13 @@ message Decision {
 
 message Respuesta {
   string mensaje = 1;
+}
+
+message Monto {
+  int32 Cantidad = 1;
+}
+
+message Confirmacion {
+  bool    Correcto = 1;
+  string  Respuesta = 2;
 }

@@ -49,6 +49,8 @@ func main() {
 	ctxT, cancelT := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancelT()
 
+	// ------------------------------ Parte 1 ------------------------------
+
 	// Solicitar una oferta
 	solicitud := &pb.Solicitud{}
 
@@ -84,6 +86,8 @@ func main() {
 		time.Sleep(100 * time.Millisecond)
 	}
 
+	// ------------------------------ Parte 2 ------------------------------
+
 	log.Printf("Franklin: %d", oferta.ProbFranklin)
 	if oferta.ProbFranklin > oferta.ProbTrevor {
 		solicitud := &pbFranklin.Solicitud{
@@ -107,4 +111,52 @@ func main() {
 		}
 		log.Printf("Distracción de Franklin resultado: %v", resultado.Res)
 	}
+
+	// ------------------------------ Parte 3 ------------------------------
+
+	// YOUR OWN CODE
+
+	// ------------------------------ Parte 4 ------------------------------
+
+	valor := BotinTotal / 4
+	resto := BotinTotal % 4
+
+	valorlester := valor + resto
+
+	// a cada uno se le envia el valor , pero a lester se el envia valorlester
+	// Crear mensaje con el monto para lester
+	monto := &pb.Monto{
+		Cantidad: valorlester,
+	}
+
+	ConfirmarL, err := client.PagarParte(ctx, monto)
+	if err != nil {
+		log.Fatalf("Error al enviar la parte de Lester: %v", err)
+	}
+
+	log.Printf("Pago enviado! : Pago correcto? %v, Nuevo mensaje de Lester Crest: %s",
+		ConfirmarL.correcto, ConfirmarL.respuesta)
+
+	// Actualizar el monto para el Franklin y Trevor
+	monto := &pb.Monto{
+		Cantidad: valor,
+	}
+
+	// Crear mensaje con el monto para Franklin
+	ConfirmarF, err := clientFranklin.PagarParte(ctx, monto)
+	if err != nil {
+		log.Fatalf("Error al enviar la parte de Franklin: %v", err)
+	}
+
+	log.Printf("Pago enviado! : Pago correcto? %v, Nuevo mensaje de Franklin Clinton: %s",
+		ConfirmarF.correcto, ConfirmarF.respuesta)
+
+	// Crear mensaje con el monto para Trevor
+	ConfirmarT, err := clientTrevor.PagarParte(ctx, monto)
+	if err != nil {
+		log.Fatalf("Error al enviar la parte de Trevor: %v", err)
+	}
+
+	log.Printf("Pago enviado! : Pago correcto? %v, Nuevo mensaje de Trevor Philips: %s",
+		ConfirmarT.correcto, ConfirmarT.respuesta)
 }

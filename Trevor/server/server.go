@@ -40,3 +40,21 @@ func (s *TrevorServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitu
 
 	return resultado, nil
 }
+
+func (s *TrevorServer) PagarParte(ctx context.Context, monto *pb.Monto) (*pb.Confirmacion, error) {
+
+	// Verificar si el monto es válido (>0)
+	if monto.Cantidad <= 0 {
+		return &pb.Confirmacion{
+			Correcto:  false,
+			Respuesta: "No recibi el pago correcto >:(",
+		}, nil
+	}
+
+	msg := fmt.Sprintf("A la p%$@ hora mikey! ... Pero hicimos un buen trabajo.")
+
+	return &pb.Confirmacion{
+		Correcto:  true,
+		Respuesta: msg,
+	}, nil
+}
