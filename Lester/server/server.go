@@ -1,10 +1,14 @@
 package server
 
 import (
+	"bufio"
 	"context"
+	"crypto/internal/fips140/edwards25519/field"
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,6 +19,22 @@ type LesterServer struct {
 	pb.UnimplementedHeistServiceServer
 	mu       sync.Mutex
 	rechazos int
+	index	 int
+	file     *os.File
+
+}
+
+func NewLesterServer() *LesterServer {
+	file, err := os.Open("ofertas_grandes.csv")
+	if err != nil {
+		log.Fatalf("Error al abrir el archivo: %v", err)
+	}
+
+	return &LesterServer{
+		rechazos: 0,
+		index:    0,
+		file:     file,
+	}
 }
 
 func (s *LesterServer) SolicitarOferta(ctx context.Context, req *pb.Solicitud) (*pb.Oferta, error) {
@@ -37,11 +57,42 @@ func (s *LesterServer) SolicitarOferta(ctx context.Context, req *pb.Solicitud) (
 		s.rechazos = 0
 	}
 
+	// Leer oferta del archivo
+	scanner := bufio.NewScanner(s.file)
+	if s.index == 0 {
+		scanner.Scan() // Saltar la primera línea (encabezados)
+	}
+	line := scanner.Text()
+	s.index++
+
+	if strings.TrimSpace(line) == "" {
+		s.file.Seek(0, 0)
+		scanner = bufio.NewScanner(s.file)
+		scanner.Scan() // Saltar la primera línea (encabezados)
+		line = scanner.Text()
+	}
+
+	fields := strings.Split(line, ",")
+
+	var botin, probFranklin, probTrevor, riesgoPolicial int32
+	if len(fields) > 0 && strings.TrimSpace(fields[0]) != "" {
+		fmt.Sscanf(fields[0], "%d", &botin)
+	}
+	if len(fields) > 1 && strings.TrimSpace(fields[1]) != "" {
+		fmt.Sscanf(fields[1], "%d", &probFranklin)
+	}
+	if len(fields) > 2 && strings.TrimSpace(fields[2]) != "" {
+		fmt.Sscanf(fields[2], "%d", &probTrevor)
+	}
+	if len(fields) > 3 && strings.TrimSpace(fields[3]) != "" {
+		fmt.Sscanf(fields[3], "%d", &riesgoPolicial)
+	}
+
 	oferta := &pb.Oferta{
-		Botin:          int32(rand.Intn(1_000_000) + 100_000),
-		ProbFranklin:   int32(rand.Intn(101)),
-		ProbTrevor:     int32(rand.Intn(101)),
-		RiesgoPolicial: int32(rand.Intn(101)),
+		Botin:          botin,
+		ProbFranklin:   probFranklin,
+		ProbTrevor:     probTrevor,
+		RiesgoPolicial: riesgoPolicial,
 		Disponible:     true,
 	}
 	return oferta, nil

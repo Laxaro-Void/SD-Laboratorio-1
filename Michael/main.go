@@ -138,12 +138,17 @@ func main() {
 			continue
 		}
 
+		if oferta.Botin == 0 || oferta.ProbFranklin == 0 || oferta.ProbTrevor == 0 || oferta.RiesgoPolicial == 0 {
+			log.Println("Algún campo de la oferta es nulo o cero, Rechazado...")
+			continue
+		}
+
 		log.Printf("Oferta recibida: Botín=%d, Franklin=%d, Trevor=%d, RiesgoPolicial=%d, Disponible=%v",
 			oferta.Botin, oferta.ProbFranklin, oferta.ProbTrevor, oferta.RiesgoPolicial, oferta.Disponible)
 
 		// Decidir aceptar o rechazar
 		decision := &pb.Decision{
-			Aceptada: oferta.Disponible && oferta.RiesgoPolicial < 80 && (oferta.ProbFranklin > 50 || oferta.ProbTrevor > 50),
+			Aceptada: !(oferta.Botin == 0 || oferta.ProbFranklin == 0 || oferta.ProbTrevor == 0 || oferta.RiesgoPolicial == 0) && oferta.Disponible && oferta.RiesgoPolicial < 80 && (oferta.ProbFranklin > 50 || oferta.ProbTrevor > 50),
 		}
 		aceptado = decision.Aceptada
 
