@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package heistFranklin;
+package heistTrevor;
 
 option go_package = "/;pb";
 
-service heistFranklinService {
+service heistTrevorService {
   rpc RealizarDistraccion (Solicitud) returns (Resultado);
 }
 
 message Solicitud {
-  int32 probFranklin = 1;
+  int32 probTrevor = 1;
 }
 
 message Resultado {

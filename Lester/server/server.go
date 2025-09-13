@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	"sync"
 	"time"
@@ -19,6 +20,8 @@ func (s *LesterServer) SolicitarOferta(ctx context.Context, req *pb.Solicitud) (
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	log.Printf("Peticion de oferta recibida")
+
 	rand.Seed(time.Now().UnixNano())
 
 	// Probabilidad oferta
@@ -28,6 +31,7 @@ func (s *LesterServer) SolicitarOferta(ctx context.Context, req *pb.Solicitud) (
 
 	// Espera de 10 segundos
 	if s.rechazos >= 3 {
+		log.Printf("Se rechazaron 3 ofertas simultaneamente, así que se enojó D:< ")
 		time.Sleep(10 * time.Second)
 		s.rechazos = 0
 	}

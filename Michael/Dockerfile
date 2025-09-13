@@ -6,8 +6,10 @@ WORKDIR /app/Michael
 # Copiar go.mod y go.sum del cliente
 COPY Michael/go.mod Michael/go.sum ./
 
-# Copiar el módulo Lester
+# Copiar el módulo Lester y Franklin
 COPY Lester ./../Lester
+COPY Franklin ./../Franklin
+COPY Trevor ./../Trevor
 
 # Descargar dependencias
 RUN go mod download

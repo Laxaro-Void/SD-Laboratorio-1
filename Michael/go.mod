@@ -4,7 +4,9 @@ go 1.23.0
 
 require (
 	google.golang.org/grpc v1.75.1
+	server.com/franklin v0.0.0-00010101000000-000000000000
 	server.com/lester v0.0.0-00010101000000-000000000000
+	server.com/trevor v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -16,3 +18,7 @@ require (
 )
 
 replace server.com/lester => ../Lester
+
+replace server.com/franklin => ../Franklin
+
+replace server.com/trevor => ../Trevor

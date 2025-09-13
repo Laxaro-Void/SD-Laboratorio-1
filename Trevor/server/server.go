@@ -7,26 +7,26 @@ import (
 	"sync"
 	"time"
 
-	pb "server.com/franklin/proto"
+	pb "server.com/trevor/proto"
 )
 
-type FranklinServer struct {
-	pb.UnimplementedHeistFranklinServiceServer
+type TrevorServer struct {
+	pb.UnimplementedHeistTrevorServiceServer
 	mu sync.Mutex
 }
 
-func (s *FranklinServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitud) (*pb.Resultado, error) {
+func (s *TrevorServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitud) (*pb.Resultado, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	rand.Seed(time.Now().UnixNano())
 
-	turnos := int(200 - req.ProbFranklin)
+	turnos := int(200 - req.ProbTrevor)
 
 	for i := 1; i <= turnos; i++ {
 		if turnos/2 == i {
 			if rand.Intn(100) <= 10 {
-				fmt.Printf("Turno %d: Franklin ha sido descubierto en las cercanias del lugar debido a que su perro Chop ha ladrado mucho, abortando mision...\n", i)
+				fmt.Printf("Turno %d: A Trevor le gustaron tanto los terremotos que se quedó prácticamente tieso en el suelo, ha fallado la mision.\n", i)
 				return &pb.Resultado{Res: false}, nil
 			}
 		}

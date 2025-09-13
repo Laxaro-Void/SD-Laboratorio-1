@@ -5,17 +5,17 @@ FROM golang:1.23.12
 WORKDIR /app
 
 # Copiar archivos de dependencias primero
-COPY Franklin/go.mod Franklin/go.sum ./
+COPY Trevor/go.mod Trevor/go.sum ./
 RUN go mod download
 
 # Copiar el resto del código fuente
-COPY Franklin ./
+COPY Trevor ./
 
 # Compilar el binario
-RUN go build -o franklin main.go
+RUN go build -o trevor main.go
 
 # Puerto expuesto (solo para el servidor gRPC)
-EXPOSE 50052
+EXPOSE 50053
 
 # Comando de inicio
-CMD ["./franklin"]
+CMD ["./trevor"]
