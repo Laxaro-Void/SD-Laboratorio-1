@@ -1,20 +1,21 @@
-.PHONY: build-producer build-consumer run-producer run-consumer run-rabbitmq stop
+.PHONY: run-rabbitmq stop
 
-build-producer:
-	sudo docker compose build producer
+build-Lester:
+	sudo docker compose build lester
 
-build-consumer:
-	sudo docker compose build consumer
+build-Michael:
+	sudo docker compose build michael
 
 run-rabbitmq:
 	sudo docker compose up -d rabbitmq
 	
-run-producer:
-	sudo docker compose run --rm producer
+run-Lester:
+	sudo docker compose run --rm lester
 
-run-consumer:
-	sudo docker compose run --rm consumer
+run-Michael:
+	sudo docker compose run --rm michael
+
 stop:
-	-sudo docker stop producer
-	-sudo docker stop consumer
+	-sudo docker stop michael
+	-sudo docker stop lester
 	-sudo docker stop rabbitmq
