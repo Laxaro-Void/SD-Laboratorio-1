@@ -1,0 +1,46 @@
+services:
+
+  lester:
+    build:
+      context: .
+      dockerfile: Lester/Dockerfile
+    container_name: lester
+    ports:
+      - "50051:50051"
+    networks:
+      - appnet
+
+  franklin:
+    build:
+      context: .
+      dockerfile: franklin/Dockerfile
+    container_name: franklin
+    ports:
+      - "50052:50052"
+    networks:
+      - appnet
+
+  trevor:
+    build:
+      context: .
+      dockerfile: trevor/Dockerfile
+    container_name: trevor
+    ports:
+      - "50053:50053"
+    networks:
+      - appnet
+
+  michael:
+    build:
+      context: .           
+      dockerfile: Michael/Dockerfile
+    container_name: michael
+    depends_on:
+      - lester
+      - franklin
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge

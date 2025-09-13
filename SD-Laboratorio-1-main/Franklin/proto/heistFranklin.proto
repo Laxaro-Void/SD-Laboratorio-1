@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package heistFranklin;
+
+option go_package = "/;pb";
+
+service heistFranklinService {
+  rpc RealizarDistraccion (Solicitud) returns (Resultado);
+  rpc PagarParte (Monto) returns (Confirmacion);
+}
+
+message Solicitud {
+  int32 probFranklin = 1;
+}
+
+message Resultado {
+  bool res = 1;
+}
+
+message Monto {
+  int32 Cantidad = 1;
+}
+
+message Confirmacion {
+  bool    Correcto = 1;
+  string  Respuesta = 2;
+}

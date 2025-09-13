@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package heist;
+
+option go_package = "/;pb";
+
+service HeistService {
+  rpc SolicitarOferta (Solicitud) returns (Oferta);
+  rpc AceptarOferta (Decision) returns (Respuesta);
+  rpc PagarParte (Monto) returns (Confirmacion);
+}
+
+message Solicitud {
+  string mensaje = 1; // p.ej. "Dame un trabajo"
+}
+
+message Oferta {
+  int32 botin = 1;
+  int32 probFranklin = 2;
+  int32 probTrevor = 3;
+  int32 riesgoPolicial = 4;
+  bool disponible = 5;
+}
+
+message Decision {
+  bool aceptada = 1;
+}
+
+message Respuesta {
+  string mensaje = 1;
+}
+
+message Monto {
+  int32 Cantidad = 1;
+}
+
+message Confirmacion {
+  bool    Correcto = 1;
+  string  Respuesta = 2;
+}
