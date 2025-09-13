@@ -47,6 +47,13 @@ services:
     networks:
       - appnet
 
+  franklin:
+    build:
+      context: .
+      dockerfile: Franklin/Dockerfile
+    depends_on:
+      - lester
+
 networks:
   appnet:
     driver: bridge
