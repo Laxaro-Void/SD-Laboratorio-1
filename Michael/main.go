@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"sync"
 	"time"
 
 	pbFranklin "server.com/franklin/proto"
@@ -49,12 +50,13 @@ func main() {
 	ctxT, cancelT := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancelT()
 
-	// Solicitar una oferta
+	// Se crea variable donde almacenar la solicitud
 	solicitud := &pb.Solicitud{}
 
 	aceptado := false
 	var oferta *pb.Oferta
 
+	// Se piden trabajos a Lester hasta que tenga una oferta lo suficientemente buena
 	for !aceptado {
 
 		var err error
@@ -83,6 +85,9 @@ func main() {
 		log.Printf("Respuesta de Lester: %s", respuesta.Mensaje)
 		time.Sleep(100 * time.Millisecond)
 	}
+	var wg sync.WaitGroup
+	wg.Add(2)
+	res := make(chan bool, 1)
 
 	log.Printf("Franklin: %d", oferta.ProbFranklin)
 	if oferta.ProbFranklin > oferta.ProbTrevor {
@@ -96,6 +101,11 @@ func main() {
 		}
 		log.Printf("Distracción de Franklin resultado: %v", resultado.Res)
 
+		go func() {
+			defer wg.Done()
+
+		}()
+
 	} else {
 		solicitud := &pbTrevor.Solicitud{
 			ProbTrevor: oferta.ProbTrevor,
@@ -105,6 +115,26 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error al realizar distracción: %v", err)
 		}
-		log.Printf("Distracción de Franklin resultado: %v", resultado.Res)
+		log.Printf("Distracción de Trevor resultado: %v", resultado.Res)
+
+		go func() {
+			defer wg.Done()
+			resultado, err := clientFranklin.RealizarAtraco(ctxF, &pbFranklin.SolicitudAtraco{ProbFranklin: oferta.ProbFranklin, Botin: oferta.Botin})
+			if err != nil {
+				log.Fatalf("Error al realizar atraco: %v", err)
+			}
+			log.Printf("Atraco de Franklin resultado: %v", resultado.Res)
+			res <- resultado.Res
+		}()
 	}
+
+	go func() {
+		defer wg.Done()
+		_, err := client.EstudiarGolpe(ctx, &pb.Riesgo{Risk: oferta.RiesgoPolicial})
+		if err != nil {
+			log.Fatalf("Error al llamar a Lester: %v", err)
+		}
+	}()
+
+	wg.Wait()
 }

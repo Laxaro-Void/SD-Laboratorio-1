@@ -7,6 +7,7 @@ option go_package = "/;pb";
 service HeistService {
   rpc SolicitarOferta (Solicitud) returns (Oferta);
   rpc AceptarOferta (Decision) returns (Respuesta);
+  rpc EstudiarGolpe (Riesgo) returns (Empty);
 }
 
 message Solicitud {
@@ -28,3 +29,9 @@ message Decision {
 message Respuesta {
   string mensaje = 1;
 }
+
+message Riesgo {
+  int32 risk = 1;
+}
+
+message Empty {}

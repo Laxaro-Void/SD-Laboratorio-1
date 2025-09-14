@@ -6,10 +6,16 @@ option go_package = "/;pb";
 
 service heistFranklinService {
   rpc RealizarDistraccion (Solicitud) returns (Resultado);
+  rpc RealizarAtraco (SolicitudAtraco) returns (Resultado);
 }
 
 message Solicitud {
   int32 probFranklin = 1;
+}
+
+message SolicitudAtraco {
+  int32 probFranklin = 1;
+  int32 botin = 2;
 }
 
 message Resultado {

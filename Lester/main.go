@@ -11,13 +11,16 @@ import (
 )
 
 func main() {
+	// Crear el servidor de Lester
+	lesterServer := server.NewLesterServer()
+
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Error escuchando: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterHeistServiceServer(grpcServer, &server.LesterServer{})
+	pb.RegisterHeistServiceServer(grpcServer, lesterServer)
 
 	log.Println("Lester gRPC server escuchando en puerto 50051")
 	if err := grpcServer.Serve(lis); err != nil {

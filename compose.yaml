@@ -1,20 +1,36 @@
 services:
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - appnet
+
   lester:
     build:
       context: .
       dockerfile: Lester/Dockerfile
     container_name: lester
+    depends_on:
+      - rabbitmq
     ports:
       - "50051:50051"
     networks:
       - appnet
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+
 
   franklin:
     build:
       context: .
       dockerfile: franklin/Dockerfile
     container_name: franklin
+    depends_on:
+      - rabbitmq
+      - lester
     ports:
       - "50052:50052"
     networks:
@@ -25,6 +41,9 @@ services:
       context: .
       dockerfile: trevor/Dockerfile
     container_name: trevor
+    depends_on:
+      - rabbitmq
+      - lester
     ports:
       - "50053:50053"
     networks:
@@ -38,6 +57,7 @@ services:
     depends_on:
       - lester
       - franklin
+      - trevor
     networks:
       - appnet
 
