@@ -29,6 +29,16 @@ type Reporte struct {
 	Estado         bool
 }
 
+/*
+func generar_reporte_final(reporte Reporte)
+Resumen:
+	Genera un reporte final de la misión y lo guarda en un archivo "Reporte.txt".
+El reporte incluye información sobre la misión, el resultado global (éxito o fallo), el reparto del botín,
+los pagos y respuestas de Franklin, Trevor y Lester, así como el saldo final de la operación.
+En caso de fallo, muestra el botín perdido y deja espacio para detallar la fase y motivo del fallo.
+Parámetros:
+  - reporte: estructura Reporte con los datos de la misión y el reparto.
+*/
 func generar_reporte_final(reporte Reporte)  {
 	// Ver si es crear un único reporte, o es un reporte por cada mision
 	file, err := os.Create("Reporte.txt")

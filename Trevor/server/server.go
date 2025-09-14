@@ -15,6 +15,19 @@ type TrevorServer struct {
 	mu sync.Mutex
 }
 
+/*
+func (s *TrevorServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitud) (*pb.Resultado, error) 
+Resumen:
+	Realiza la distracción durante la misión.
+Simula una serie de turnos basados en la probabilidad de Trevor.
+Si en la mitad de los turnos ocurre un evento adverso (10% de probabilidad), la misión falla.
+Parámetros:
+  - ctx: contexto de la solicitud gRPC.
+  - req: estructura Solicitud con la probabilidad de Trevor.
+Retorna:
+  - Resultado: estructura con el resultado de la distracción (éxito o fallo).
+  - error: error en caso de fallo en el proceso.
+*/
 func (s *TrevorServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitud) (*pb.Resultado, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -41,6 +54,18 @@ func (s *TrevorServer) RealizarDistraccion(ctx context.Context, req *pb.Solicitu
 	return resultado, nil
 }
 
+/*
+func (s *TrevorServer) PagarParte(ctx context.Context, monto *pb.Monto) (*pb.Confirmacion, error) 
+Resumen:
+	Recibe el pago de la parte del botín correspondiente a Trevor.
+Verifica que el monto sea válido (>0) y responde con una confirmación.
+Parámetros:
+  - ctx: contexto de la solicitud gRPC.
+  - monto: estructura Monto con la cantidad a pagar.
+Retorna:
+  - Confirmacion: estructura con el resultado del pago y un mensaje de respuesta.
+  - error: error en caso de fallo en el proceso.
+*/
 func (s *TrevorServer) PagarParte(ctx context.Context, monto *pb.Monto) (*pb.Confirmacion, error) {
 
 	// Verificar si el monto es válido (>0)

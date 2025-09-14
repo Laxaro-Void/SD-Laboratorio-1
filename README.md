@@ -6,12 +6,11 @@
 - Benjamín Ponce
 - Álvaro Rojas Valenuela
 
-### Librerias Go
+### Instrucciones de Build
+Son 4 máquinas virtuales asignados por cada miembro
 
-
-### Instalación Docker:
-- 
--
--
--
+- dist037 : Michael
+- dist038 : Lester
+- dist039 : Trevol
+- dist040 : Trevol
 

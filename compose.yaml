@@ -1,10 +1,20 @@
 services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - appnet
 
   lester:
     build:
-      context: .
-      dockerfile: Lester/Dockerfile
+      context: ./Lester
+      dockerfile: Dockerfile
     container_name: lester
+    volumes:
+      - ./Lester/server/ofertas_grandes.csv:/app/server/ofertas_grandes.csv
     ports:
       - "50051:50051"
     networks:
@@ -12,8 +22,8 @@ services:
 
   franklin:
     build:
-      context: .
-      dockerfile: franklin/Dockerfile
+      context: ./Franklin
+      dockerfile: Dockerfile
     container_name: franklin
     ports:
       - "50052:50052"
@@ -22,8 +32,8 @@ services:
 
   trevor:
     build:
-      context: .
-      dockerfile: trevor/Dockerfile
+      context: ./Trevor
+      dockerfile: Dockerfile
     container_name: trevor
     ports:
       - "50053:50053"
@@ -32,21 +42,14 @@ services:
 
   michael:
     build:
-      context: .           
-      dockerfile: Michael/Dockerfile
+      context: ./Michael
+      dockerfile: Dockerfile
     container_name: michael
     depends_on:
       - lester
       - franklin
     networks:
       - appnet
-
-  franklin:
-    build:
-      context: .
-      dockerfile: Franklin/Dockerfile
-    depends_on:
-      - lester
 
 networks:
   appnet:
