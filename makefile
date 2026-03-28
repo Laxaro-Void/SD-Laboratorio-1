@@ -1,20 +1,18 @@
-.PHONY: build-producer build-consumer run-producer run-consumer run-rabbitmq stop
+.PHONY: docker-hokage docker-anbu docker-akatruski docker-equiposninja stop-docker-hokage stop-docker-anbu stop-docker-akatruski stop-docker-equiposninja 
 
-build-producer:
-	sudo docker compose build producer
+docker-hokage:
 
-build-consumer:
-	sudo docker compose build consumer
+docker-anbu:
 
-run-rabbitmq:
-	sudo docker compose up -d rabbitmq
-	
-run-producer:
-	sudo docker compose run --rm producer
+docker-akatsuki:
 
-run-consumer:
-	sudo docker compose run --rm consumer
-stop:
-	-sudo docker stop producer
-	-sudo docker stop consumer
-	-sudo docker stop rabbitmq
+docker-equiposninja:
+
+
+stop-docker-hokage:
+
+stop-docker-anbu:
+
+stop-docker-akatsuki:
+
+stop-docker-equiposninja:
