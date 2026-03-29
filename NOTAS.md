@@ -1,3 +1,17 @@
+## gRPC & ProtoBuffer
+To compile a .proto file use:
+'''
+protoc --go_out=. --go-grpc_out=. name.proto
+'''
+
+After instaling golang, use this comands to add the protoc-gen-go and protoc-gen-go-grpc to the PATH:
+
+'''
+export PATH="$PATH:$(go env GOPATH)/bin" && \
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+'''
+
 ## RabbitMQ
 Dowload and start rabbitmq using docker, see the local port is used
                                        ¬ local ¬

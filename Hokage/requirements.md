@@ -9,3 +9,8 @@ Entidad encargada de **mantener la lista** de los miebros de *Akatsuki* detectad
 
 ### Pagar Recompesas
 - Cuando un *equipo ninja* reporta una captura exitosa, 
+
+## Maquina Virtual
+Se le asigna a este modulo a la siguiente máquina:
+- nombre    : dist028
+- ip enp1s0 : 10.35.168.38/24    

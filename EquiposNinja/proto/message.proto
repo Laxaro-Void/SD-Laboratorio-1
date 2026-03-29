@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package message;
+
+option go_package = "./message";
+
+// The Messenger service definition.
+service Messenger {
+  // Sends a message and receives a reply.
+  rpc SendMessage (MessageRequest) returns (MessageReply);
+}
+
+message MessageRequest {
+  string from = 1;
+  string body = 2;
+}
+
+message MessageReply {
+  string status = 1;
+}

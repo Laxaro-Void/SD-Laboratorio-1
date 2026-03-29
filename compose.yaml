@@ -1,66 +1,67 @@
 services:
-
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
-    networks:
-      - appnet
 
-  lester:
+  Akatsuki:
     build:
-      context: .
-      dockerfile: Lester/Dockerfile
-    container_name: lester
+      context: ./Akatsuki
+      dockerfile: dir/Dockerfile
+    container_name: Akatsuki
+    ports:
+      - "5001:5001"
+    environmet:
+      - "NAME=Akatsuki"
+      - "PORT=5001"
+      - "Anbu-IP=10.35.168.36:5001"
+      - "EquiposNinja-IP=10.35.168.37:5001"
+      - "Hokage-IP=10.35.168.38:5001"
+      - "RABBITMQ-IP=10.35.168.36:5672"
+  Anbu:
+    build:
+      context: ./Anbu
+      dockerfile: dir/Dockerfile
+    container_name: Anbu
+    ports:
+      - "5001:5001"
+    environmet:
+      - "NAME=Anbu"
+      - "PORT=5001"
+      - "Akatsuki-IP=10.35.168.35:5001"
+      - "EquiposNinja-IP=10.35.168.37:5001"
+      - "Hokage-IP=10.35.168.38:5001"
+      - "RABBITMQ-IP=10.35.168.36:5672"
     depends_on:
       - rabbitmq
-    ports:
-      - "50051:50051"
-    networks:
-      - appnet
-    environment:
-      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
 
-
-  franklin:
+  EquiposNinja:
     build:
-      context: .
-      dockerfile: franklin/Dockerfile
-    container_name: franklin
-    depends_on:
-      - rabbitmq
-      - lester
+      context: ./EquiposNinja
+      dockerfile: dir/Dockerfile
+    container_name: EquiposNinja
     ports:
-      - "50052:50052"
-    networks:
-      - appnet
+      - "5001:5001"
+    environmet:
+      - "NAME=EquiposNinja"
+      - "PORT=5001"
+      - "Akatsuki-IP=10.35.168.35:5001"
+      - "Anbu-IP=10.35.168.36:5001"
+      - "Hokage-IP=10.35.168.38:5001"
+      - "RABBITMQ-IP=10.35.168.36:5672"
 
-  trevor:
+  Hokage:
     build:
-      context: .
-      dockerfile: trevor/Dockerfile
-    container_name: trevor
-    depends_on:
-      - rabbitmq
-      - lester
+      context: ./Hokage
+      dockerfile: dir/Dockerfile
+    container_name: Hokage
     ports:
-      - "50053:50053"
-    networks:
-      - appnet
-
-  michael:
-    build:
-      context: .           
-      dockerfile: Michael/Dockerfile
-    container_name: michael
-    depends_on:
-      - lester
-      - franklin
-      - trevor
-    networks:
-      - appnet
-
-networks:
-  appnet:
-    driver: bridge
+      - "5001:5001"
+    environmet:
+      - "NAME=Hokage"
+      - "PORT=5001"
+      - "Akatsuki-IP=10.35.168.35:5001"
+      - "Anbu-IP=10.35.168.36:5001"
+      - "EquiposNinja-IP=10.35.168.37:5001"
+      - "RABBITMQ-IP=10.35.168.36:5672"
