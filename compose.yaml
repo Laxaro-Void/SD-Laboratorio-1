@@ -8,8 +8,8 @@ services:
   akatsuki:
     build:
       context: ./Akatsuki
-      dockerfile: dir/Dockerfile
-    container_name: Akatsuki
+      dockerfile: Akatsuki/Dockerfile
+    container_name: akatsuki
     ports:
       - "5001:5001"
     environment:
@@ -22,8 +22,8 @@ services:
   anbu:
     build:
       context: ./Anbu
-      dockerfile: dir/Dockerfile
-    container_name: Anbu
+      dockerfile: Anbu/Dockerfile
+    container_name: anbu
     ports:
       - "5001:5001"
     environment:
@@ -39,8 +39,8 @@ services:
   equiposninja:
     build:
       context: ./EquiposNinja
-      dockerfile: dir/Dockerfile
-    container_name: EquiposNinja
+      dockerfile: EquiposNinja/Dockerfile
+    container_name: equiposninja
     ports:
       - "5001:5001"
     environment:
@@ -54,8 +54,8 @@ services:
   hokage:
     build:
       context: ./Hokage
-      dockerfile: dir/Dockerfile
-    container_name: Hokage
+      dockerfile: Hokage/Dockerfile
+    container_name: hokage
     ports:
       - "5001:5001"
     environment:
