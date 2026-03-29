@@ -12,7 +12,7 @@ services:
     container_name: Akatsuki
     ports:
       - "5001:5001"
-    environmet:
+    environment:
       - "NAME=Akatsuki"
       - "PORT=5001"
       - "Anbu-IP=10.35.168.36:5001"
@@ -26,7 +26,7 @@ services:
     container_name: Anbu
     ports:
       - "5001:5001"
-    environmet:
+    environment:
       - "NAME=Anbu"
       - "PORT=5001"
       - "Akatsuki-IP=10.35.168.35:5001"
@@ -43,7 +43,7 @@ services:
     container_name: EquiposNinja
     ports:
       - "5001:5001"
-    environmet:
+    environment:
       - "NAME=EquiposNinja"
       - "PORT=5001"
       - "Akatsuki-IP=10.35.168.35:5001"
@@ -58,7 +58,7 @@ services:
     container_name: Hokage
     ports:
       - "5001:5001"
-    environmet:
+    environment:
       - "NAME=Hokage"
       - "PORT=5001"
       - "Akatsuki-IP=10.35.168.35:5001"
