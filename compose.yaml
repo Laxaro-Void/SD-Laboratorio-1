@@ -5,7 +5,7 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  Akatsuki:
+  akatsuki:
     build:
       context: ./Akatsuki
       dockerfile: dir/Dockerfile
@@ -19,7 +19,7 @@ services:
       - "EquiposNinja-IP=10.35.168.37:5001"
       - "Hokage-IP=10.35.168.38:5001"
       - "RABBITMQ-IP=10.35.168.36:5672"
-  Anbu:
+  anbu:
     build:
       context: ./Anbu
       dockerfile: dir/Dockerfile
@@ -36,7 +36,7 @@ services:
     depends_on:
       - rabbitmq
 
-  EquiposNinja:
+  equiposninja:
     build:
       context: ./EquiposNinja
       dockerfile: dir/Dockerfile
@@ -51,7 +51,7 @@ services:
       - "Hokage-IP=10.35.168.38:5001"
       - "RABBITMQ-IP=10.35.168.36:5672"
 
-  Hokage:
+  hokage:
     build:
       context: ./Hokage
       dockerfile: dir/Dockerfile
