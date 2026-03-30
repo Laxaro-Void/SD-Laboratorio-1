@@ -1,0 +1,62 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  akatsuki:
+    build:
+      context: ./Akatsuki
+    container_name: akatsuki
+    ports:
+      - "5001:5001"
+    environment:
+      - "NAME=Akatsuki"
+      - "PORT=5001"
+      - "Anbu-IP=anbu:5002"
+      - "EquiposNinja-IP=equiposninja:5003"
+      - "Hokage-IP=hokage:5004"
+      - "RABBITMQ-IP=rabbitmq:5672"
+  anbu:
+    build:
+      context: ./Anbu
+    container_name: anbu
+    ports:
+      - "5002:5002"
+    environment:
+      - "NAME=Anbu"
+      - "PORT=5002"
+      - "Akatsuki-IP=akatsuki:5001"
+      - "EquiposNinja-IP=equiposninja:5003"
+      - "Hokage-IP=hokage:5004"
+      - "RABBITMQ-IP=rabbitmq:5672"
+
+  equiposninja:
+    build:
+      context: ./EquiposNinja
+    container_name: equiposninja
+    ports:
+      - "5003:5003"
+    environment:
+      - "NAME=EquiposNinja"
+      - "PORT=5003"
+      - "Akatsuki-IP=akatsuki:5001"
+      - "Anbu-IP=anbu:5002"
+      - "Hokage-IP=hokage:5004"
+      - "RABBITMQ-IP=rabbitmq:5672"
+
+  hokage:
+    build:
+      context: ./Hokage
+    container_name: hokage
+    ports:
+      - "5004:5004"
+    environment:
+      - "NAME=Hokage"
+      - "PORT=5004"
+      - "Akatsuki-IP=akatsuki:5001"
+      - "Anbu-IP=anbu:5002"
+      - "EquiposNinja-IP=equiposninja:5003"
+      - "RABBITMQ-IP=rabbitmq:5672"

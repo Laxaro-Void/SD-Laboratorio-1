@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.1
-// source: message.proto
+// source: EquiposNinja/proto/message.proto
 
 package message
 
@@ -31,7 +31,7 @@ type MessageRequest struct {
 
 func (x *MessageRequest) Reset() {
 	*x = MessageRequest{}
-	mi := &file_message_proto_msgTypes[0]
+	mi := &file_EquiposNinja_proto_message_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *MessageRequest) String() string {
 func (*MessageRequest) ProtoMessage() {}
 
 func (x *MessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[0]
+	mi := &file_EquiposNinja_proto_message_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *MessageRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageRequest.ProtoReflect.Descriptor instead.
 func (*MessageRequest) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{0}
+	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *MessageRequest) GetFrom() string {
@@ -82,7 +82,7 @@ type MessageReply struct {
 
 func (x *MessageReply) Reset() {
 	*x = MessageReply{}
-	mi := &file_message_proto_msgTypes[1]
+	mi := &file_EquiposNinja_proto_message_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +94,7 @@ func (x *MessageReply) String() string {
 func (*MessageReply) ProtoMessage() {}
 
 func (x *MessageReply) ProtoReflect() protoreflect.Message {
-	mi := &file_message_proto_msgTypes[1]
+	mi := &file_EquiposNinja_proto_message_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +107,7 @@ func (x *MessageReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageReply.ProtoReflect.Descriptor instead.
 func (*MessageReply) Descriptor() ([]byte, []int) {
-	return file_message_proto_rawDescGZIP(), []int{1}
+	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *MessageReply) GetStatus() string {
@@ -117,11 +117,11 @@ func (x *MessageReply) GetStatus() string {
 	return ""
 }
 
-var File_message_proto protoreflect.FileDescriptor
+var File_EquiposNinja_proto_message_proto protoreflect.FileDescriptor
 
-const file_message_proto_rawDesc = "" +
+const file_EquiposNinja_proto_message_proto_rawDesc = "" +
 	"\n" +
-	"\rmessage.proto\x12\amessage\"8\n" +
+	" EquiposNinja/proto/message.proto\x12\amessage\"8\n" +
 	"\x0eMessageRequest\x12\x12\n" +
 	"\x04from\x18\x01 \x01(\tR\x04from\x12\x12\n" +
 	"\x04body\x18\x02 \x01(\tR\x04body\"&\n" +
@@ -131,23 +131,23 @@ const file_message_proto_rawDesc = "" +
 	"\vSendMessage\x12\x17.message.MessageRequest\x1a\x15.message.MessageReplyB\vZ\t./messageb\x06proto3"
 
 var (
-	file_message_proto_rawDescOnce sync.Once
-	file_message_proto_rawDescData []byte
+	file_EquiposNinja_proto_message_proto_rawDescOnce sync.Once
+	file_EquiposNinja_proto_message_proto_rawDescData []byte
 )
 
-func file_message_proto_rawDescGZIP() []byte {
-	file_message_proto_rawDescOnce.Do(func() {
-		file_message_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_message_proto_rawDesc), len(file_message_proto_rawDesc)))
+func file_EquiposNinja_proto_message_proto_rawDescGZIP() []byte {
+	file_EquiposNinja_proto_message_proto_rawDescOnce.Do(func() {
+		file_EquiposNinja_proto_message_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_EquiposNinja_proto_message_proto_rawDesc), len(file_EquiposNinja_proto_message_proto_rawDesc)))
 	})
-	return file_message_proto_rawDescData
+	return file_EquiposNinja_proto_message_proto_rawDescData
 }
 
-var file_message_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_message_proto_goTypes = []any{
+var file_EquiposNinja_proto_message_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_EquiposNinja_proto_message_proto_goTypes = []any{
 	(*MessageRequest)(nil), // 0: message.MessageRequest
 	(*MessageReply)(nil),   // 1: message.MessageReply
 }
-var file_message_proto_depIdxs = []int32{
+var file_EquiposNinja_proto_message_proto_depIdxs = []int32{
 	0, // 0: message.Messenger.SendMessage:input_type -> message.MessageRequest
 	1, // 1: message.Messenger.SendMessage:output_type -> message.MessageReply
 	1, // [1:2] is the sub-list for method output_type
@@ -157,26 +157,26 @@ var file_message_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_message_proto_init() }
-func file_message_proto_init() {
-	if File_message_proto != nil {
+func init() { file_EquiposNinja_proto_message_proto_init() }
+func file_EquiposNinja_proto_message_proto_init() {
+	if File_EquiposNinja_proto_message_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_message_proto_rawDesc), len(file_message_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_EquiposNinja_proto_message_proto_rawDesc), len(file_EquiposNinja_proto_message_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_message_proto_goTypes,
-		DependencyIndexes: file_message_proto_depIdxs,
-		MessageInfos:      file_message_proto_msgTypes,
+		GoTypes:           file_EquiposNinja_proto_message_proto_goTypes,
+		DependencyIndexes: file_EquiposNinja_proto_message_proto_depIdxs,
+		MessageInfos:      file_EquiposNinja_proto_message_proto_msgTypes,
 	}.Build()
-	File_message_proto = out.File
-	file_message_proto_goTypes = nil
-	file_message_proto_depIdxs = nil
+	File_EquiposNinja_proto_message_proto = out.File
+	file_EquiposNinja_proto_message_proto_goTypes = nil
+	file_EquiposNinja_proto_message_proto_depIdxs = nil
 }
