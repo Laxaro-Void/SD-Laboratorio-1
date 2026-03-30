@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v6.33.1
-// source: message.proto
+// source: Akatsuki/proto/message.proto
 
 package message
 
@@ -123,5 +123,5 @@ var Messenger_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "message.proto",
+	Metadata: "Akatsuki/proto/message.proto",
 }
