@@ -31,8 +31,6 @@ services:
       - "EquiposNinja-IP=10.35.168.37:5001"
       - "Hokage-IP=10.35.168.38:5001"
       - "RABBITMQ-IP=10.35.168.36:5672"
-    depends_on:
-      - rabbitmq
 
   equiposninja:
     build:
