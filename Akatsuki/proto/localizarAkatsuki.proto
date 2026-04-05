@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "./localizarAkatsuki";
+package localizarAkatsuki;
+
+// 
+service LocalizarAkatsuki {
+  //
+  rpc SubmitAkatsuki(LocalizarAkatsukiRequest) returns (LocalizarAkatsukiResponse);
+}
+
+message LocalizarAkatsukiRequest {
+  int32 id = 1;
+  string nombre = 2;
+  int32 ataque = 3;
+  int32 vida = 4;
+  string estado = 5;
+}
+
+message LocalizarAkatsukiResponse {
+  bool success = 1;
+}
