@@ -4,17 +4,25 @@ package message;
 
 option go_package = "./message";
 
-// The Messenger service definition.
-service Messenger {
-  // Sends a message and receives a reply.
-  rpc SendMessage (MessageRequest) returns (MessageReply);
+
+service IniciarCombate {
+    rpc IniciarCombate (Equipos) returns (Empty);
 }
 
-message MessageRequest {
-  string from = 1;
-  string body = 2;
+message DatosEquipo {
+    string nombreEquipo = 1;
+    int32 ataque = 2;
+    int32 vida = 3;
 }
 
-message MessageReply {
-  string status = 1;
+message Equipos {
+    DatosEquipo ninja = 1;
+    DatosEquipo rival = 2;
 }
+
+message EstadoCombate {
+    string estadoFinal = 1;
+    bool combateIniciado = 2;
+}
+
+message Empty {}
