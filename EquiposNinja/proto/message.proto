@@ -4,17 +4,48 @@ package message;
 
 option go_package = "./message";
 
-// The Messenger service definition.
-service Messenger {
-  // Sends a message and receives a reply.
-  rpc SendMessage (MessageRequest) returns (MessageReply);
+// Servicio para interactuar con el Hokage
+service Hokage {
+    rpc ObtenerListaAkatsukis (Empty) returns (ListaAkatsukis);
+    rpc ReclamarRecompensa (SolicitudRecompensa) returns (ConfirmacionPago);
 }
 
-message MessageRequest {
-  string from = 1;
-  string body = 2;
+// Servicio para el combate con Akatsuki
+service Akatsuki {
+    rpc IniciarCombate (DatosEquipo) returns (EstadoCombate);
 }
 
-message MessageReply {
-  string status = 1;
+message Empty {}
+
+message AkatsukiInfo {
+    string nombre = 1;
+    int32 ataque = 2;
+    int32 vida = 3;
+    string estado = 4;
+    string recompensa = 5;
+}
+
+message ListaAkatsukis {
+    repeated AkatsukiInfo enemigos = 1;
+}
+
+message DatosEquipo {
+    string nombreEquipo = 1;
+    int32 ataque = 2;
+    int32 vida = 3;
+}
+
+message EstadoCombate {
+    string estadoFinal = 1;
+    bool combateIniciado = 2;
+}
+
+message SolicitudRecompensa {
+    string nombreEquipo = 1;
+    string nombreAkatsuki = 2;
+}
+
+message ConfirmacionPago {
+    string mensaje = 1;
+    float ryoPagados = 2;
 }
