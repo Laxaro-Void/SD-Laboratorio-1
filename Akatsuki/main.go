@@ -36,11 +36,12 @@ type Enemigo struct {
 }
 
 type akatsukiServer struct {
-	mu       sync.Mutex
+	pb.UnimplementedIniciarCombateServer
+	mu sync.Mutex
 	enemigos []Enemigo
 }
 
-// Tarea: Generar Akatsuki de forma periódica
+// Generar Akatsuki de forma periódica
 func (s *akatsukiServer) generarEnemigos() {
 	nombres := []string{"Itachi", "Kisame", "Nagato", "Sasori", "Deidara", "Hidan", "Kakuzu"}
 	conn, err := dialRabbitMQ()
@@ -63,8 +64,8 @@ func (s *akatsukiServer) generarEnemigos() {
 			Ataque:     55 + rand.Intn(31), // 70 +- 30
 			Vida:       75 + rand.Intn(76), // 150 +- 75
 			Estado:     "Localizado",
+			Disponible: true,
 		}
-		s.enemigos = append(s.enemigos, nuevo)
 		fmt.Printf("[SISTEMA] Nuevo Akatsuki detectado: %s\n", nuevo.Nombre)
 		s.mu.Unlock()
 		// Se sube la cosa a la cola Rabbit
@@ -99,9 +100,32 @@ func (s *akatsukiServer) generarEnemigos() {
 
 
 // Comenzar Combate y Simulación
-// func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pb.DatosEquipo) (*pb.EstadoCombate, error) {
+func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pb.Equipos) (*pb.EstadoCombate, error) {
+	var ninja, rival int;
+	var turnoNinja bool;
 
-// }
+	// Se calcula cual de los 2 equipos ataca primero
+	for ninja == rival {
+		ninja = rand.Intn(100)
+		rival = rand.Intn(100)
+	}
+
+	if ninja > rival {
+		turnoNinja = true
+	} else {
+		turnoNinja = false
+	}
+
+	s.mu.Lock()
+	fmt.Println("=========================================================")
+	fmt.Println("==                LOGS DEL COMBATE                     ==")
+	fmt.Println("=========================================================")
+	fmt.Println("\nComienza Combate")
+
+	for (pb.DatosEquipo) {
+
+	}
+}
 
 func main() {
 	name := os.Getenv("NAME")
@@ -113,12 +137,8 @@ func main() {
 	// 	log.Fatalf("Fallo al escuchar: %v", err)
 	// }
 
-	// s := grpc.NewServer()
-	serverInstance := &akatsukiServer{
-		enemigos: []Enemigo{
-			{Nombre: "Itachi", Ataque: 85, Vida: 180, Estado: "Localizado", Disponible: true},
-		},
-	}
+	s := grpc.NewServer()
+	serverInstance := &akatsukiServer{}
 
 	// // pb.RegisterAkatsukiServer(s, serverInstance)
 
