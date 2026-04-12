@@ -1,22 +1,18 @@
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq-container
+    container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    networks:
-      default:
-        aliases:
-          - rabbitmq
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pass
 
   akatsuki:
     build:
       context: ./Akatsuki
-    container_name: akatsuki
+    container_name: akatsuki-container
     ports:
       - "5001:5001"
     environment:
@@ -26,6 +22,11 @@ services:
       - "EquiposNinja-IP=equiposninja:5003"
       - "Hokage-IP=hokage:5004"
       - "RABBITMQ-IP=rabbitmq:5672"
+    networks:
+      default:
+        aliases:
+          - "akatsuki"
+
   anbu:
     build:
       context: ./Anbu
@@ -39,13 +40,18 @@ services:
       - "EquiposNinja-IP=equiposninja:5003"
       - "Hokage-IP=hokage:5004"
       - "RABBITMQ-IP=rabbitmq:5672"
+    networks:
+      default:
+        aliases:
+          - "anbu"
+
 
   equiposninja:
     build:
       context: ./EquiposNinja
     stdin_open: true
     tty: true
-    container_name: equiposninja
+    container_name: equiposninja-container
     ports:
       - "5003:5003"
     environment:
@@ -59,7 +65,7 @@ services:
   hokage:
     build:
       context: ./Hokage
-    container_name: hokage
+    container_name: hokage-container
     ports:
       - "5004:5004"
     environment:
@@ -69,3 +75,7 @@ services:
       - "Anbu-IP=anbu:5002"
       - "EquiposNinja-IP=equiposninja:5003"
       - "RABBITMQ-IP=rabbitmq:5672"
+    networks:
+      default:
+        aliases:
+          - "hokage"

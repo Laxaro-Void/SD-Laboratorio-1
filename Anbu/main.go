@@ -2,11 +2,11 @@ package main
 
 import (
 	// "context"
-	// "fmt"
+	"fmt"
 	"log"
 	// "net"
 	"os"
-	// "time"
+	"time"
 
 	pb "Anbu/proto/DataAkatsuki"
 	"github.com/rabbitmq/amqp091-go"
@@ -23,47 +23,19 @@ type Akatsukis struct {
 }
 
 func dialRabbitMQ() (*amqp091.Connection, error) {
-	log.Printf("Connecting to RabbitMQ at %s", "amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	conn, err := amqp091.Dial("amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	if err != nil {
-		return nil, err
+	var maxAttempts = 10
+	var attempt int
+	for attempt = 1; attempt <= maxAttempts; attempt++ {
+		log.Printf("Attempting to connect to RabbitMQ (Attempt %d/%d)", attempt, maxAttempts)
+		conn, err := amqp091.Dial("amqp://user:pass@" + os.Getenv("RABBITMQ-IP") + "/")
+		if err == nil {
+			log.Printf("Successfully connected to RabbitMQ on attempt %d", attempt)
+			return conn, nil
+		}
+		log.Printf("Failed to connect to RabbitMQ on attempt %d: %v", attempt, err)
+		time.Sleep(5 * time.Second) // Wait before retrying
 	}
-	return conn, nil
-}
-
-func sendAkatsuki(data *pb.DataAkatsukiRequest) error {
-	conn, err := dialRabbitMQ()
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	
-	ch, err := conn.Channel()
-	if err != nil {
-		return err
-	}
-	defer ch.Close()
-
-	body, err := proto.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	err = ch.Publish(
-		"",     			  // exchange
-		"localizar_akatsuki", // routing key
-		false,  			  // mandatory
-		false,  			  // immediate
-		amqp091.Publishing{
-			ContentType: "application/protobuf",
-			Body:        body,
-		})
-	if err != nil {
-		return err
-	}
-
-	log.Printf("Sent: %+v\n", data.Id)
-	return nil
+	return nil, fmt.Errorf("could not connect to RabbitMQ after %d attempts", maxAttempts)
 }
 
 /**
@@ -173,7 +145,7 @@ func notificarAkatsuki(data *pb.DataAkatsukiRequest) error {
 * Recibe Akattsuki desde RabbitMQ desde el canal "localizar_akatsuki"
 * Origen: Akatsuki 
 **/
-func reciveLocalizarAkatsuki() {
+func localizarAkatsuki() {
 	conn, err := dialRabbitMQ()
 	if err != nil {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
@@ -225,7 +197,7 @@ func main() {
 	initialize()
 
 	// Tarea de Recivir mensajes de RabbitMQ desde Akatsuki
-	go reciveLocalizarAkatsuki()
+	go localizarAkatsuki()
 
 	log.Printf("Waiting for messages. To exit press CTRL+C")
 	<-forever

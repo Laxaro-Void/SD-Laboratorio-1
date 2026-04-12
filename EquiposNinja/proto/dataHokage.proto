@@ -1,8 +1,7 @@
 syntax = "proto3";
 
-package message;
-
-option go_package = "./message";
+option go_package = "./DataHokage";
+package DataHokage;
 
 // Servicio para interactuar con el Hokage
 service Hokage {
@@ -10,23 +9,19 @@ service Hokage {
     rpc ReclamarRecompensa (SolicitudRecompensa) returns (ConfirmacionPago);
 }
 
-// Servicio para el combate con Akatsuki
-service Akatsuki {
-    rpc IniciarCombate (DatosEquipo) returns (EstadoCombate);
-}
-
 message Empty {}
 
 message AkatsukiInfo {
-    string nombre = 1;
-    int32 ataque = 2;
-    int32 vida = 3;
-    string estado = 4;
-    string recompensa = 5;
+    int32 id = 1;
+    string nombre = 2;
+    int32 ataque = 3;
+    int32 vida = 4;
+    string estado = 5;
+    int32 recompensa = 6;
 }
 
 message ListaAkatsukis {
-    repeated AkatsukiInfo enemigos = 1;
+    repeated AkatsukiInfo akatsukis = 1;
 }
 
 message DatosEquipo {

@@ -1,7 +1,8 @@
 package main
 
 import (
-	// "context"
+	"context"
+	"net"
 	"fmt"
 	"log"
 	"math/rand"
@@ -11,39 +12,48 @@ import (
 
 	"github.com/rabbitmq/amqp091-go"
 
-	pb "Akatsuki/proto/DataAkatsuki"
+	pbDataAkatsuki "Akatsuki/proto/DataAkatsuki"
+	pbCombateAkatsuki "Akatsuki/proto/CombateAkatsuki"
 
-	// "google.golang.org/grpc"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 )
 
 func dialRabbitMQ() (*amqp091.Connection, error) {
-	log.Printf("Connecting to RabbitMQ at %s", "amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	conn, err := amqp091.Dial("amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	if err != nil {
-		return nil, err
+	var maxAttempts = 10
+	var attempt int
+	for attempt = 1; attempt <= maxAttempts; attempt++ {
+		log.Printf("Attempting to connect to RabbitMQ (Attempt %d/%d)", attempt, maxAttempts)
+		conn, err := amqp091.Dial("amqp://user:pass@" + os.Getenv("RABBITMQ-IP") + "/")
+		if err == nil {
+			log.Printf("Successfully connected to RabbitMQ on attempt %d", attempt)
+			return conn, nil
+		}
+		log.Printf("Failed to connect to RabbitMQ on attempt %d: %v", attempt, err)
+		time.Sleep(5 * time.Second) // Wait before retrying
 	}
-	return conn, nil
+	return nil, fmt.Errorf("could not connect to RabbitMQ after %d attempts", maxAttempts)
 }
 
-type Enemigo struct {
+type Akatsuki struct {
 	Nombre     string
 	Ataque     int
 	Vida       int
-	Estado     string // "Localizado", "En Combate", "Capturado" [cite: 91]
-	// Recompensa string
-	Disponible bool
+	Estado     string // "Localizado", "En Combate", "Capturado"
+}
+
+type akatsukiData struct {
+	mu sync.Mutex
+	enemigos []Akatsuki
 }
 
 type akatsukiServer struct {
-	pb.UnimplementedIniciarCombateServer
-	mu sync.Mutex
-	enemigos []Enemigo
+	pbCombateAkatsuki.UnimplementedCombateAkatsukiServer
 }
 
 // Generar Akatsuki de forma periódica
-func (s *akatsukiServer) generarEnemigos() {
-	nombres := []string{"Itachi", "Kisame", "Nagato", "Sasori", "Deidara", "Hidan", "Kakuzu"}
+func (s *akatsukiData) localizarAkatsuki() {
+	nombres := []string{"Konan", "Nagato", "Yahiko", "Kyusuke", "Kie", "Daibutsu", "Obito Uchiha", "Zetsu Blanco", "Zetsu Negro", "Kisame Hoshigaki", "Konan", "Nagato", "Itachi Uchiha", "Deidara", "Orochimaru", "Juzo Biwa", "Kakuzu", "Hidan", "Sasori"}
 	conn, err := dialRabbitMQ()
 	if err != nil {
 		log.Fatalf("Error al conectar con RabbitMQ: %v", err)
@@ -59,25 +69,23 @@ func (s *akatsukiServer) generarEnemigos() {
 	for {
 		time.Sleep(20 * time.Second) // Intervalo de aparición
 		s.mu.Lock()
-		nuevo := Enemigo{
+		nuevo := Akatsuki{
 			Nombre:     nombres[rand.Intn(len(nombres))],
 			Ataque:     55 + rand.Intn(31), // 70 +- 30
 			Vida:       75 + rand.Intn(76), // 150 +- 75
 			Estado:     "Localizado",
-			Disponible: true,
 		}
+		s.enemigos = append(s.enemigos, nuevo)
 		fmt.Printf("[SISTEMA] Nuevo Akatsuki detectado: %s\n", nuevo.Nombre)
 		s.mu.Unlock()
-		// Se sube la cosa a la cola Rabbit
 
-		data := &pb.DataAkatsukiRequest{
-			Id:     int32(len(s.enemigos)-1), // ID basado en la longitud actual
-			Nombre:   nuevo.Nombre,
+		data := &pbDataAkatsuki.DataAkatsukiRequest{
+			Id:     int32(len(s.enemigos)-1),
+			Nombre: nuevo.Nombre,
 			Ataque: int32(nuevo.Ataque),
 			Vida:   int32(nuevo.Vida),
 			Estado: nuevo.Estado,
 		}
-
 		body, err := proto.Marshal(data)
 		if err != nil {
 			log.Fatalf("Error al serializar datos: %v", err)
@@ -98,9 +106,12 @@ func (s *akatsukiServer) generarEnemigos() {
 	}
 }
 
+func (s *akatsukiData) actualizarEstado(id int, estado string) {
+
+}
 
 // Comenzar Combate y Simulación
-func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pb.Equipos) (*pb.EstadoCombate, error) {
+func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkatsuki.IniciarCombateRequest) (*pbCombateAkatsuki.IniciarCombateResult, error) {
 	var ninja, rival int;
 	var turnoNinja bool;
 
@@ -116,14 +127,35 @@ func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pb.Equipos) (*
 		turnoNinja = false
 	}
 
-	s.mu.Lock()
 	fmt.Println("=========================================================")
 	fmt.Println("==                LOGS DEL COMBATE                     ==")
 	fmt.Println("=========================================================")
 	fmt.Println("\nComienza Combate")
 
-	for (pb.DatosEquipo) {
+	if turnoNinja {
+		
+	}
 
+	return &pbCombateAkatsuki.IniciarCombateResult{Success: true}, nil
+}
+
+func serverBackground() {
+	server := &akatsukiData{
+		enemigos: make([]Akatsuki, 0),
+	}
+
+	go server.localizarAkatsuki()
+
+	listener, err := net.Listen("tcp", ":"+os.Getenv("PORT"))
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+	pbCombateAkatsuki.RegisterCombateAkatsukiServer(grpcServer, &akatsukiServer{})
+	log.Printf("Hokage server is listening on port %s", os.Getenv("PORT"))
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
 	}
 }
 
@@ -131,25 +163,8 @@ func main() {
 	name := os.Getenv("NAME")
 	port := os.Getenv("PORT")
 	log.Printf("%s is running on port %s", name, port)
-	// Inicializar servidor gRPC
-	// lis, err := net.Listen("tcp", ":50051") // Puerto asignado en MV3
-	// if err != nil {
-	// 	log.Fatalf("Fallo al escuchar: %v", err)
-	// }
 
-	s := grpc.NewServer()
-	serverInstance := &akatsukiServer{}
-
-	// // pb.RegisterAkatsukiServer(s, serverInstance)
-
-	// conn, _ := amqp.Dial("amqp://guest:guest@anbu-vm:5672/")
-	// ch, _ := conn.Channel()
-
-	// // Declarar la cola por seguridad
-	// ch.QueueDeclare("lista_akatsukis", false, false, false, false, nil)
-
-	// Goroutine para generar enemigos dinámicamente
-	go serverInstance.generarEnemigos()
+	go serverBackground()
 
 	forever := make(chan bool)
 	log.Printf("Waiting for messages. To exit press CTRL+C")

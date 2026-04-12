@@ -5,23 +5,32 @@ import (
 	"log"
 	"fmt"
 	"sync"
+	"context"
+	"time"
 
-	pb "EquiposNinja/proto/message"
+	pbDataHokage "EquiposNinja/proto/DataHokage"
 	pbDataAkatsuki "EquiposNinja/proto/DataAkatsuki"
+	pbCombateAkatsuki "EquiposNinja/proto/CombateAkatsuki"
 	"google.golang.org/protobuf/proto"
 
 	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func dialRabbitMQ() (*amqp091.Connection, error) {
-	log.Printf("Connecting to RabbitMQ at %s", "amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	conn, err := amqp091.Dial("amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
-	if err != nil {
-		return nil, err
+	var maxAttempts = 10
+	var attempt int
+	for attempt = 1; attempt <= maxAttempts; attempt++ {
+		log.Printf("Attempting to connect to RabbitMQ (Attempt %d/%d)", attempt, maxAttempts)
+		conn, err := amqp091.Dial("amqp://user:pass@" + os.Getenv("RABBITMQ-IP") + "/")
+		if err == nil {
+			log.Printf("Successfully connected to RabbitMQ on attempt %d", attempt)
+			return conn, nil
+		}
+		log.Printf("Failed to connect to RabbitMQ on attempt %d: %v", attempt, err)
+		time.Sleep(5 * time.Second) // Wait before retrying
 	}
-	return conn, nil
+	return nil, fmt.Errorf("could not connect to RabbitMQ after %d attempts", maxAttempts)
 }
 
 type Equipo struct {
@@ -33,7 +42,7 @@ type Equipo struct {
 
 type Akatsuki struct {
 	Id int
-	Name string
+	Nombre string
 	Ataque int
 	Vida int
 	Estado string
@@ -64,6 +73,15 @@ func (al *AkatsukiList) ReplaceAkatsuki(akatsuki Akatsuki)  {
 	al.Akatsukis[akatsuki.Id] = akatsuki
 }
 
+func (al *AkatsukiList) ReplaceEstado(id int, estado string) {
+	al.mu.Lock()
+	defer al.mu.Unlock()
+	if akatsuki, exists := al.Akatsukis[id]; exists {
+		akatsuki.Estado = estado
+		al.Akatsukis[id] = akatsuki
+	}
+}
+
 func (al *AkatsukiList) ReplaceALLAkatsuki(akatsuki []Akatsuki)  {
 	al.mu.Lock()
 	defer al.mu.Unlock()
@@ -73,7 +91,7 @@ func (al *AkatsukiList) ReplaceALLAkatsuki(akatsuki []Akatsuki)  {
 	}
 }
 
-func listeningInfoAnbu() {
+func listeningInfoAnbu(akatsukiList *AkatsukiList) {
 	// Conexión RabbitMQ para recibir información de Anbu
 	connRabbit, err := dialRabbitMQ()
 	if err != nil {
@@ -120,7 +138,13 @@ func listeningInfoAnbu() {
 			continue
 		}
 		log.Printf("Mensaje recibido de Anbu: %s", data.Nombre)
-		// Aquí se puede agregar lógica para procesar el mensaje y actualizar el estado del equipo ninja
+		akatsuki := Akatsuki{
+			Id:     int(data.Id),
+			Estado: data.Estado,
+		}
+		if _, exists := akatsukiList.GetAkatsuki(akatsuki.Id); exists {
+			akatsukiList.ReplaceEstado(akatsuki.Id, akatsuki.Estado)
+		}
 	}
 }
 
@@ -131,19 +155,42 @@ func mostrarEstadisticas(equipo *Equipo) {
 	log.Printf("Bolsa de Ryo: %.2f", equipo.BolsaRyo)
 }
 
-func solicitarLista(clientHokage pb.HokageClient, equipo *Equipo) {
-	
+func solicitarLista(client pbDataHokage.HokageClient, akatsukiList *AkatsukiList) {
+	response, err:= client.ObtenerListaAkatsukis(context.Background(),&pbDataHokage.Empty{})
+	if err != nil {
+		log.Printf("Error al solicitar lista de Akatsukis: %v", err)
+		return
+	}
+	log.Printf("Lista de Akatsukis:")
+	for _, akatsuki := range response.Akatsukis {
+		fmt.Printf("ID: %d / Nombre: %s / Ataque: %d / Vida: %d / Estado: %s / Recompensa: %d", akatsuki.Id, akatsuki.Nombre, akatsuki.Ataque, akatsuki.Vida, akatsuki.Estado, akatsuki.Recompensa)
+		akatsukiList.ReplaceAkatsuki(Akatsuki{Id: int(akatsuki.Id), Nombre: akatsuki.Nombre, Ataque: int(akatsuki.Ataque), Vida: int(akatsuki.Vida), Estado: akatsuki.Estado, isComunicated: false})
+	}
 }
 
-func solicitarRecompensa(clientHokage pb.HokageClient, equipo *Equipo) {
+func solicitarRecompensa(clientHokage pbDataHokage.HokageClient, equipo *Equipo) {
 
 }
 
-func atacarAkatsuki(clientAkatsuki pb.AkatsukiClient, equipo *Equipo) {
+func atacarAkatsuki(client pbCombateAkatsuki.CombateAkatsukiClient, equipo *Equipo) {
 	fmt.Println("Iniciando simulación de combate...")
 	var nombre string
 	fmt.Print("Ingrese Nombre del enemigo que desea atacar: ")
 	fmt.Scanln((&nombre))
+
+	response, err := client.IniciarCombate(
+		context.Background(), 
+		&pbCombateAkatsuki.IniciarCombateRequest{
+			Equipo: &pbCombateAkatsuki.DatosEquipo{NombreEquipo: equipo.Nombre, Ataque: int32(equipo.Ataque), Vida: int32(equipo.Vida)}, 
+			IdObjetivo: 0, 
+			NombreObjetivo: ""})
+	
+	if err != nil {
+		log.Printf("Error al obtener resultados de combate: %v", err)
+		return
+	}
+
+	log.Printf("Resultado %v", response.Success)
 }
 
 func crearEquipoNinja() {
@@ -168,25 +215,31 @@ func crearEquipoNinja() {
 	log.Printf("Vida: %d", statsEquipo.Vida)
 	log.Printf("Bolsa de Ryo: %.2f", statsEquipo.BolsaRyo)
 
-	go listeningInfoAnbu()
+	akatsukiList := &AkatsukiList{
+		Akatsukis: make(map[int]Akatsuki),
+	}
+
+	go listeningInfoAnbu(akatsukiList)
 
 	// ----------------------------- Conexiones ----------------------------- //
 	// 1. Conexión gRPC con Hokage (MV1)
-	connHokage, err := grpc.NewClient("" + os.Getenv("Hokage-IP"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connHokage, err := grpc.Dial(os.Getenv("Hokage-IP"), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("No se pudo conectar con Hokage: %v", err)
 		return
 	}
 	defer connHokage.Close()
-	clientHokage := pb.NewHokageClient(connHokage)
+	log.Printf("Conectado a Hokage en %s", connHokage.Target())
+	clientHokage := pbDataHokage.NewHokageClient(connHokage)
 
 	// 2. Conexión gRPC con Akatsuki (MV3)
-	connAkatsuki, err := grpc.NewClient("" + os.Getenv("Akatsuki-IP"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connAkatsuki, err := grpc.Dial(os.Getenv("Akatsuki-IP"), grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("No se pudo conectar con Akatsuki: %v", err)
 	}
 	defer connAkatsuki.Close()
-	clientAkatsuki := pb.NewAkatsukiClient(connAkatsuki)
+	log.Printf("Conectado a Akatsuki en %s", connAkatsuki.Target())
+	clientAkatsuki := pbCombateAkatsuki.NewCombateAkatsukiClient(connAkatsuki)
 
 	// ------------------------------ Interfaz de Usuario ----------------------------- //
 	for {
@@ -203,7 +256,7 @@ func crearEquipoNinja() {
 		switch opcion {
 		case 1:
 			// Lógica para pedir lista
-			solicitarLista(clientHokage, statsEquipo)
+			solicitarLista(clientHokage, akatsukiList)
 		case 2:
 			// Lógica para atacar Akatsuki
 			atacarAkatsuki(clientAkatsuki, statsEquipo)

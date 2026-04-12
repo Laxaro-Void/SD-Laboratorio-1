@@ -1,1 +1,0 @@
-protoc --proto_path=EquiposNinja/proto --go_out=EquiposNinja/proto/message --go_opt=paths=source_relative --go-grpc_out=EquiposNinja/proto/message --go-grpc_opt=paths=source_relative EquiposNinja/proto/message.proto

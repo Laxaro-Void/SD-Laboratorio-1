@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option go_package = "./CombateAkatsuki";
+package CombateAkatsuki;
+
+service CombateAkatsuki {
+    rpc IniciarCombate (IniciarCombateRequest) returns (IniciarCombateResult);
+}
+
+message DatosEquipo {
+    string nombre_equipo = 1;
+    int32 ataque = 2;
+    int32 vida = 3;
+}
+
+message IniciarCombateRequest {
+    DatosEquipo equipo = 1;
+    int32 id_objetivo = 2;
+    string nombre_objetivo = 3;
+}
+
+message IniciarCombateResult {
+    bool success = 1;
+}

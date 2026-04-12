@@ -153,9 +153,7 @@ const file_Anbu_proto_dataAkatsuki_proto_rawDesc = "" +
 	"\x04vida\x18\x04 \x01(\x05R\x04vida\x12\x16\n" +
 	"\x06estado\x18\x05 \x01(\tR\x06estado\"0\n" +
 	"\x14DataAkatsukiResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2g\n" +
-	"\fDataAkatsuki\x12W\n" +
-	"\x0eSubmitAkatsuki\x12!.DataAkatsuki.DataAkatsukiRequest\x1a\".DataAkatsuki.DataAkatsukiResponseB\x10Z\x0e./DataAkatsukib\x06proto3"
+	"\asuccess\x18\x01 \x01(\bR\asuccessB\x10Z\x0e./DataAkatsukib\x06proto3"
 
 var (
 	file_Anbu_proto_dataAkatsuki_proto_rawDescOnce sync.Once
@@ -175,10 +173,8 @@ var file_Anbu_proto_dataAkatsuki_proto_goTypes = []any{
 	(*DataAkatsukiResponse)(nil), // 1: DataAkatsuki.DataAkatsukiResponse
 }
 var file_Anbu_proto_dataAkatsuki_proto_depIdxs = []int32{
-	0, // 0: DataAkatsuki.DataAkatsuki.SubmitAkatsuki:input_type -> DataAkatsuki.DataAkatsukiRequest
-	1, // 1: DataAkatsuki.DataAkatsuki.SubmitAkatsuki:output_type -> DataAkatsuki.DataAkatsukiResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -197,7 +193,7 @@ func file_Anbu_proto_dataAkatsuki_proto_init() {
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   0,
 		},
 		GoTypes:           file_Anbu_proto_dataAkatsuki_proto_goTypes,
 		DependencyIndexes: file_Anbu_proto_dataAkatsuki_proto_depIdxs,

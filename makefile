@@ -37,22 +37,22 @@ stop-docker-equiposninja:
 ## Localhost
 local-docker-akatsuki:
 	sudo docker-compose -f compose.localhost.yaml build akatsuki
-	sudo docker-compose -f compose.localhost.yaml run --remove-orphans akatsuki
+	sudo docker-compose -f compose.localhost.yaml run --use-aliases --remove-orphans akatsuki
 
 local-docker-anbu:
 	sudo docker-compose -f compose.localhost.yaml build anbu
-	sudo docker-compose -f compose.localhost.yaml run --remove-orphans anbu
+	sudo docker-compose -f compose.localhost.yaml run --use-aliases --remove-orphans anbu
 
 local-docker-equiposninja:
 	sudo docker-compose -f compose.localhost.yaml build equiposninja
 	read -p "Cantidad de Equipos Ninja: " cantidad; \
 	for i in $$(seq 1 $$cantidad); do \
-		nohup alacritty -e sudo docker-compose -f compose.localhost.yaml run --remove-orphans equiposninja & \
+		nohup alacritty -e sudo docker-compose -f compose.localhost.yaml run --use-aliases --remove-orphans equiposninja & \
 	done
 
 local-docker-hokage:
 	sudo docker-compose -f compose.localhost.yaml build hokage
-	sudo docker-compose -f compose.localhost.yaml run --remove-orphans hokage
+	sudo docker-compose -f compose.localhost.yaml run --use-aliases --remove-orphans hokage
 
 stop-local-docker-akatsuki:
 	sudo docker-compose -f compose.localhost.yaml stop akatsuki

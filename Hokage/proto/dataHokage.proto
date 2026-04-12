@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option go_package = "./DataHokage";
+package DataHokage;
+
+// Servicio para interactuar con el Hokage
+service Hokage {
+    //
+    rpc ObtenerListaAkatsukis (Empty) returns (ListaAkatsukis);
+    //
+    rpc ReclamarRecompensa (SolicitudRecompensa) returns (ConfirmacionPago);
+}
+
+message Empty {}
+
+message AkatsukiInfo {
+    int32 id = 1;
+    string nombre = 2;
+    int32 ataque = 3;
+    int32 vida = 4;
+    string estado = 5;
+    int32 recompensa = 6;
+}
+
+message ListaAkatsukis {
+    repeated AkatsukiInfo akatsukis = 1;
+}
+
+message DatosEquipo {
+    string nombreEquipo = 1;
+    int32 ataque = 2;
+    int32 vida = 3;
+}
+
+message EstadoCombate {
+    string estadoFinal = 1;
+    bool combateIniciado = 2;
+}
+
+message SolicitudRecompensa {
+    string nombreEquipo = 1;
+    string nombreAkatsuki = 2;
+}
+
+message ConfirmacionPago {
+    string mensaje = 1;
+    float ryoPagados = 2;
+}

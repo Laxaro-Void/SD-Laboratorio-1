@@ -3,12 +3,6 @@ syntax = "proto3";
 option go_package = "./DataAkatsuki";
 package DataAkatsuki;
 
-// 
-service DataAkatsuki {
-  //
-  rpc SubmitAkatsuki(DataAkatsukiRequest) returns (DataAkatsukiResponse);
-}
-
 message DataAkatsukiRequest {
   int32 id = 1;
   string nombre = 2;

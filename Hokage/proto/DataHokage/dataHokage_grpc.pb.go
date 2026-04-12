@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: EquiposNinja/proto/message.proto
+// source: Hokage/proto/dataHokage.proto
 
-package message
+package DataHokage
 
 import (
 	context "context"
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Hokage_ObtenerListaAkatsukis_FullMethodName = "/message.Hokage/ObtenerListaAkatsukis"
-	Hokage_ReclamarRecompensa_FullMethodName    = "/message.Hokage/ReclamarRecompensa"
+	Hokage_ObtenerListaAkatsukis_FullMethodName = "/DataHokage.Hokage/ObtenerListaAkatsukis"
+	Hokage_ReclamarRecompensa_FullMethodName    = "/DataHokage.Hokage/ReclamarRecompensa"
 )
 
 // HokageClient is the client API for Hokage service.
@@ -146,7 +146,7 @@ func _Hokage_ReclamarRecompensa_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Hokage_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "message.Hokage",
+	ServiceName: "DataHokage.Hokage",
 	HandlerType: (*HokageServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -159,111 +159,5 @@ var Hokage_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "EquiposNinja/proto/message.proto",
-}
-
-const (
-	Akatsuki_IniciarCombate_FullMethodName = "/message.Akatsuki/IniciarCombate"
-)
-
-// AkatsukiClient is the client API for Akatsuki service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-//
-// Servicio para el combate con Akatsuki
-type AkatsukiClient interface {
-	IniciarCombate(ctx context.Context, in *DatosEquipo, opts ...grpc.CallOption) (*EstadoCombate, error)
-}
-
-type akatsukiClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewAkatsukiClient(cc grpc.ClientConnInterface) AkatsukiClient {
-	return &akatsukiClient{cc}
-}
-
-func (c *akatsukiClient) IniciarCombate(ctx context.Context, in *DatosEquipo, opts ...grpc.CallOption) (*EstadoCombate, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(EstadoCombate)
-	err := c.cc.Invoke(ctx, Akatsuki_IniciarCombate_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// AkatsukiServer is the server API for Akatsuki service.
-// All implementations must embed UnimplementedAkatsukiServer
-// for forward compatibility.
-//
-// Servicio para el combate con Akatsuki
-type AkatsukiServer interface {
-	IniciarCombate(context.Context, *DatosEquipo) (*EstadoCombate, error)
-	mustEmbedUnimplementedAkatsukiServer()
-}
-
-// UnimplementedAkatsukiServer must be embedded to have
-// forward compatible implementations.
-//
-// NOTE: this should be embedded by value instead of pointer to avoid a nil
-// pointer dereference when methods are called.
-type UnimplementedAkatsukiServer struct{}
-
-func (UnimplementedAkatsukiServer) IniciarCombate(context.Context, *DatosEquipo) (*EstadoCombate, error) {
-	return nil, status.Error(codes.Unimplemented, "method IniciarCombate not implemented")
-}
-func (UnimplementedAkatsukiServer) mustEmbedUnimplementedAkatsukiServer() {}
-func (UnimplementedAkatsukiServer) testEmbeddedByValue()                  {}
-
-// UnsafeAkatsukiServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AkatsukiServer will
-// result in compilation errors.
-type UnsafeAkatsukiServer interface {
-	mustEmbedUnimplementedAkatsukiServer()
-}
-
-func RegisterAkatsukiServer(s grpc.ServiceRegistrar, srv AkatsukiServer) {
-	// If the following call panics, it indicates UnimplementedAkatsukiServer was
-	// embedded by pointer and is nil.  This will cause panics if an
-	// unimplemented method is ever invoked, so we test this at initialization
-	// time to prevent it from happening at runtime later due to I/O.
-	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
-		t.testEmbeddedByValue()
-	}
-	s.RegisterService(&Akatsuki_ServiceDesc, srv)
-}
-
-func _Akatsuki_IniciarCombate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DatosEquipo)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AkatsukiServer).IniciarCombate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Akatsuki_IniciarCombate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AkatsukiServer).IniciarCombate(ctx, req.(*DatosEquipo))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// Akatsuki_ServiceDesc is the grpc.ServiceDesc for Akatsuki service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var Akatsuki_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "message.Akatsuki",
-	HandlerType: (*AkatsukiServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "IniciarCombate",
-			Handler:    _Akatsuki_IniciarCombate_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "EquiposNinja/proto/message.proto",
+	Metadata: "Hokage/proto/dataHokage.proto",
 }

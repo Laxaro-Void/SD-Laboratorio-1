@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: EquiposNinja/proto/message.proto
+// source: Hokage/proto/dataHokage.proto
 
-package message
+package DataHokage
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -29,7 +29,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[0]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -41,7 +41,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[0]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -54,23 +54,24 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{0}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{0}
 }
 
 type AkatsukiInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Nombre        string                 `protobuf:"bytes,1,opt,name=nombre,proto3" json:"nombre,omitempty"`
-	Ataque        int32                  `protobuf:"varint,2,opt,name=ataque,proto3" json:"ataque,omitempty"`
-	Vida          int32                  `protobuf:"varint,3,opt,name=vida,proto3" json:"vida,omitempty"`
-	Estado        string                 `protobuf:"bytes,4,opt,name=estado,proto3" json:"estado,omitempty"`
-	Recompensa    string                 `protobuf:"bytes,5,opt,name=recompensa,proto3" json:"recompensa,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Nombre        string                 `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
+	Ataque        int32                  `protobuf:"varint,3,opt,name=ataque,proto3" json:"ataque,omitempty"`
+	Vida          int32                  `protobuf:"varint,4,opt,name=vida,proto3" json:"vida,omitempty"`
+	Estado        string                 `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
+	Recompensa    int32                  `protobuf:"varint,6,opt,name=recompensa,proto3" json:"recompensa,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AkatsukiInfo) Reset() {
 	*x = AkatsukiInfo{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[1]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -82,7 +83,7 @@ func (x *AkatsukiInfo) String() string {
 func (*AkatsukiInfo) ProtoMessage() {}
 
 func (x *AkatsukiInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[1]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -95,7 +96,14 @@ func (x *AkatsukiInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AkatsukiInfo.ProtoReflect.Descriptor instead.
 func (*AkatsukiInfo) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{1}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AkatsukiInfo) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
 }
 
 func (x *AkatsukiInfo) GetNombre() string {
@@ -126,23 +134,23 @@ func (x *AkatsukiInfo) GetEstado() string {
 	return ""
 }
 
-func (x *AkatsukiInfo) GetRecompensa() string {
+func (x *AkatsukiInfo) GetRecompensa() int32 {
 	if x != nil {
 		return x.Recompensa
 	}
-	return ""
+	return 0
 }
 
 type ListaAkatsukis struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Enemigos      []*AkatsukiInfo        `protobuf:"bytes,1,rep,name=enemigos,proto3" json:"enemigos,omitempty"`
+	Akatsukis     []*AkatsukiInfo        `protobuf:"bytes,1,rep,name=akatsukis,proto3" json:"akatsukis,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListaAkatsukis) Reset() {
 	*x = ListaAkatsukis{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[2]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -154,7 +162,7 @@ func (x *ListaAkatsukis) String() string {
 func (*ListaAkatsukis) ProtoMessage() {}
 
 func (x *ListaAkatsukis) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[2]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -167,12 +175,12 @@ func (x *ListaAkatsukis) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListaAkatsukis.ProtoReflect.Descriptor instead.
 func (*ListaAkatsukis) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{2}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ListaAkatsukis) GetEnemigos() []*AkatsukiInfo {
+func (x *ListaAkatsukis) GetAkatsukis() []*AkatsukiInfo {
 	if x != nil {
-		return x.Enemigos
+		return x.Akatsukis
 	}
 	return nil
 }
@@ -188,7 +196,7 @@ type DatosEquipo struct {
 
 func (x *DatosEquipo) Reset() {
 	*x = DatosEquipo{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[3]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -200,7 +208,7 @@ func (x *DatosEquipo) String() string {
 func (*DatosEquipo) ProtoMessage() {}
 
 func (x *DatosEquipo) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[3]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -213,7 +221,7 @@ func (x *DatosEquipo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatosEquipo.ProtoReflect.Descriptor instead.
 func (*DatosEquipo) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{3}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DatosEquipo) GetNombreEquipo() string {
@@ -247,7 +255,7 @@ type EstadoCombate struct {
 
 func (x *EstadoCombate) Reset() {
 	*x = EstadoCombate{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[4]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -259,7 +267,7 @@ func (x *EstadoCombate) String() string {
 func (*EstadoCombate) ProtoMessage() {}
 
 func (x *EstadoCombate) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[4]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -272,7 +280,7 @@ func (x *EstadoCombate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EstadoCombate.ProtoReflect.Descriptor instead.
 func (*EstadoCombate) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{4}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EstadoCombate) GetEstadoFinal() string {
@@ -299,7 +307,7 @@ type SolicitudRecompensa struct {
 
 func (x *SolicitudRecompensa) Reset() {
 	*x = SolicitudRecompensa{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[5]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +319,7 @@ func (x *SolicitudRecompensa) String() string {
 func (*SolicitudRecompensa) ProtoMessage() {}
 
 func (x *SolicitudRecompensa) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[5]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -324,7 +332,7 @@ func (x *SolicitudRecompensa) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SolicitudRecompensa.ProtoReflect.Descriptor instead.
 func (*SolicitudRecompensa) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{5}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SolicitudRecompensa) GetNombreEquipo() string {
@@ -351,7 +359,7 @@ type ConfirmacionPago struct {
 
 func (x *ConfirmacionPago) Reset() {
 	*x = ConfirmacionPago{}
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[6]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -363,7 +371,7 @@ func (x *ConfirmacionPago) String() string {
 func (*ConfirmacionPago) ProtoMessage() {}
 
 func (x *ConfirmacionPago) ProtoReflect() protoreflect.Message {
-	mi := &file_EquiposNinja_proto_message_proto_msgTypes[6]
+	mi := &file_Hokage_proto_dataHokage_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -376,7 +384,7 @@ func (x *ConfirmacionPago) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfirmacionPago.ProtoReflect.Descriptor instead.
 func (*ConfirmacionPago) Descriptor() ([]byte, []int) {
-	return file_EquiposNinja_proto_message_proto_rawDescGZIP(), []int{6}
+	return file_Hokage_proto_dataHokage_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ConfirmacionPago) GetMensaje() string {
@@ -393,22 +401,24 @@ func (x *ConfirmacionPago) GetRyoPagados() float32 {
 	return 0
 }
 
-var File_EquiposNinja_proto_message_proto protoreflect.FileDescriptor
+var File_Hokage_proto_dataHokage_proto protoreflect.FileDescriptor
 
-const file_EquiposNinja_proto_message_proto_rawDesc = "" +
+const file_Hokage_proto_dataHokage_proto_rawDesc = "" +
 	"\n" +
-	" EquiposNinja/proto/message.proto\x12\amessage\"\a\n" +
-	"\x05Empty\"\x8a\x01\n" +
-	"\fAkatsukiInfo\x12\x16\n" +
-	"\x06nombre\x18\x01 \x01(\tR\x06nombre\x12\x16\n" +
-	"\x06ataque\x18\x02 \x01(\x05R\x06ataque\x12\x12\n" +
-	"\x04vida\x18\x03 \x01(\x05R\x04vida\x12\x16\n" +
-	"\x06estado\x18\x04 \x01(\tR\x06estado\x12\x1e\n" +
+	"\x1dHokage/proto/dataHokage.proto\x12\n" +
+	"DataHokage\"\a\n" +
+	"\x05Empty\"\x9a\x01\n" +
+	"\fAkatsukiInfo\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x16\n" +
+	"\x06nombre\x18\x02 \x01(\tR\x06nombre\x12\x16\n" +
+	"\x06ataque\x18\x03 \x01(\x05R\x06ataque\x12\x12\n" +
+	"\x04vida\x18\x04 \x01(\x05R\x04vida\x12\x16\n" +
+	"\x06estado\x18\x05 \x01(\tR\x06estado\x12\x1e\n" +
 	"\n" +
-	"recompensa\x18\x05 \x01(\tR\n" +
-	"recompensa\"C\n" +
-	"\x0eListaAkatsukis\x121\n" +
-	"\benemigos\x18\x01 \x03(\v2\x15.message.AkatsukiInfoR\benemigos\"]\n" +
+	"recompensa\x18\x06 \x01(\x05R\n" +
+	"recompensa\"H\n" +
+	"\x0eListaAkatsukis\x126\n" +
+	"\takatsukis\x18\x01 \x03(\v2\x18.DataHokage.AkatsukiInfoR\takatsukis\"]\n" +
 	"\vDatosEquipo\x12\"\n" +
 	"\fnombreEquipo\x18\x01 \x01(\tR\fnombreEquipo\x12\x16\n" +
 	"\x06ataque\x18\x02 \x01(\x05R\x06ataque\x12\x12\n" +
@@ -423,70 +433,66 @@ const file_EquiposNinja_proto_message_proto_rawDesc = "" +
 	"\amensaje\x18\x01 \x01(\tR\amensaje\x12\x1e\n" +
 	"\n" +
 	"ryoPagados\x18\x02 \x01(\x02R\n" +
-	"ryoPagados2\x99\x01\n" +
-	"\x06Hokage\x12@\n" +
-	"\x15ObtenerListaAkatsukis\x12\x0e.message.Empty\x1a\x17.message.ListaAkatsukis\x12M\n" +
-	"\x12ReclamarRecompensa\x12\x1c.message.SolicitudRecompensa\x1a\x19.message.ConfirmacionPago2J\n" +
-	"\bAkatsuki\x12>\n" +
-	"\x0eIniciarCombate\x12\x14.message.DatosEquipo\x1a\x16.message.EstadoCombateB\vZ\t./messageb\x06proto3"
+	"ryoPagados2\xa5\x01\n" +
+	"\x06Hokage\x12F\n" +
+	"\x15ObtenerListaAkatsukis\x12\x11.DataHokage.Empty\x1a\x1a.DataHokage.ListaAkatsukis\x12S\n" +
+	"\x12ReclamarRecompensa\x12\x1f.DataHokage.SolicitudRecompensa\x1a\x1c.DataHokage.ConfirmacionPagoB\x0eZ\f./DataHokageb\x06proto3"
 
 var (
-	file_EquiposNinja_proto_message_proto_rawDescOnce sync.Once
-	file_EquiposNinja_proto_message_proto_rawDescData []byte
+	file_Hokage_proto_dataHokage_proto_rawDescOnce sync.Once
+	file_Hokage_proto_dataHokage_proto_rawDescData []byte
 )
 
-func file_EquiposNinja_proto_message_proto_rawDescGZIP() []byte {
-	file_EquiposNinja_proto_message_proto_rawDescOnce.Do(func() {
-		file_EquiposNinja_proto_message_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_EquiposNinja_proto_message_proto_rawDesc), len(file_EquiposNinja_proto_message_proto_rawDesc)))
+func file_Hokage_proto_dataHokage_proto_rawDescGZIP() []byte {
+	file_Hokage_proto_dataHokage_proto_rawDescOnce.Do(func() {
+		file_Hokage_proto_dataHokage_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Hokage_proto_dataHokage_proto_rawDesc), len(file_Hokage_proto_dataHokage_proto_rawDesc)))
 	})
-	return file_EquiposNinja_proto_message_proto_rawDescData
+	return file_Hokage_proto_dataHokage_proto_rawDescData
 }
 
-var file_EquiposNinja_proto_message_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_EquiposNinja_proto_message_proto_goTypes = []any{
-	(*Empty)(nil),               // 0: message.Empty
-	(*AkatsukiInfo)(nil),        // 1: message.AkatsukiInfo
-	(*ListaAkatsukis)(nil),      // 2: message.ListaAkatsukis
-	(*DatosEquipo)(nil),         // 3: message.DatosEquipo
-	(*EstadoCombate)(nil),       // 4: message.EstadoCombate
-	(*SolicitudRecompensa)(nil), // 5: message.SolicitudRecompensa
-	(*ConfirmacionPago)(nil),    // 6: message.ConfirmacionPago
+var file_Hokage_proto_dataHokage_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_Hokage_proto_dataHokage_proto_goTypes = []any{
+	(*Empty)(nil),               // 0: DataHokage.Empty
+	(*AkatsukiInfo)(nil),        // 1: DataHokage.AkatsukiInfo
+	(*ListaAkatsukis)(nil),      // 2: DataHokage.ListaAkatsukis
+	(*DatosEquipo)(nil),         // 3: DataHokage.DatosEquipo
+	(*EstadoCombate)(nil),       // 4: DataHokage.EstadoCombate
+	(*SolicitudRecompensa)(nil), // 5: DataHokage.SolicitudRecompensa
+	(*ConfirmacionPago)(nil),    // 6: DataHokage.ConfirmacionPago
 }
-var file_EquiposNinja_proto_message_proto_depIdxs = []int32{
-	1, // 0: message.ListaAkatsukis.enemigos:type_name -> message.AkatsukiInfo
-	0, // 1: message.Hokage.ObtenerListaAkatsukis:input_type -> message.Empty
-	5, // 2: message.Hokage.ReclamarRecompensa:input_type -> message.SolicitudRecompensa
-	3, // 3: message.Akatsuki.IniciarCombate:input_type -> message.DatosEquipo
-	2, // 4: message.Hokage.ObtenerListaAkatsukis:output_type -> message.ListaAkatsukis
-	6, // 5: message.Hokage.ReclamarRecompensa:output_type -> message.ConfirmacionPago
-	4, // 6: message.Akatsuki.IniciarCombate:output_type -> message.EstadoCombate
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
+var file_Hokage_proto_dataHokage_proto_depIdxs = []int32{
+	1, // 0: DataHokage.ListaAkatsukis.akatsukis:type_name -> DataHokage.AkatsukiInfo
+	0, // 1: DataHokage.Hokage.ObtenerListaAkatsukis:input_type -> DataHokage.Empty
+	5, // 2: DataHokage.Hokage.ReclamarRecompensa:input_type -> DataHokage.SolicitudRecompensa
+	2, // 3: DataHokage.Hokage.ObtenerListaAkatsukis:output_type -> DataHokage.ListaAkatsukis
+	6, // 4: DataHokage.Hokage.ReclamarRecompensa:output_type -> DataHokage.ConfirmacionPago
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_EquiposNinja_proto_message_proto_init() }
-func file_EquiposNinja_proto_message_proto_init() {
-	if File_EquiposNinja_proto_message_proto != nil {
+func init() { file_Hokage_proto_dataHokage_proto_init() }
+func file_Hokage_proto_dataHokage_proto_init() {
+	if File_Hokage_proto_dataHokage_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_EquiposNinja_proto_message_proto_rawDesc), len(file_EquiposNinja_proto_message_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Hokage_proto_dataHokage_proto_rawDesc), len(file_Hokage_proto_dataHokage_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
-		GoTypes:           file_EquiposNinja_proto_message_proto_goTypes,
-		DependencyIndexes: file_EquiposNinja_proto_message_proto_depIdxs,
-		MessageInfos:      file_EquiposNinja_proto_message_proto_msgTypes,
+		GoTypes:           file_Hokage_proto_dataHokage_proto_goTypes,
+		DependencyIndexes: file_Hokage_proto_dataHokage_proto_depIdxs,
+		MessageInfos:      file_Hokage_proto_dataHokage_proto_msgTypes,
 	}.Build()
-	File_EquiposNinja_proto_message_proto = out.File
-	file_EquiposNinja_proto_message_proto_goTypes = nil
-	file_EquiposNinja_proto_message_proto_depIdxs = nil
+	File_Hokage_proto_dataHokage_proto = out.File
+	file_Hokage_proto_dataHokage_proto_goTypes = nil
+	file_Hokage_proto_dataHokage_proto_depIdxs = nil
 }
