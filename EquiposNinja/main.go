@@ -1,19 +1,28 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"os"
 	"log"
-	"math/rand"
+	"fmt"
 	"sync"
-	"time"
 
 	pb "EquiposNinja/proto/message"
+	pbDataAkatsuki "EquiposNinja/proto/DataAkatsuki"
+	"google.golang.org/protobuf/proto"
 
-	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+func dialRabbitMQ() (*amqp091.Connection, error) {
+	log.Printf("Connecting to RabbitMQ at %s", "amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
+	conn, err := amqp091.Dial("amqp://guest:guest@" + os.Getenv("RABBITMQ-IP") + "/")
+	if err != nil {
+		return nil, err
+	}
+	return conn, nil
+}
 
 type Equipo struct {
 	Nombre   string
@@ -22,70 +31,164 @@ type Equipo struct {
 	BolsaRyo float64
 }
 
-func main() {
-	rand.Seed(time.Now().UnixNano())
+type Akatsuki struct {
+	Id int
+	Name string
+	Ataque int
+	Vida int
+	Estado string
+	isComunicated bool
+}
 
-	var nombre string
-	var atk, vida int
-	var ryo float64
-	fmt.Println("Nuevo Equipo!")
-	fmt.Print("Ingrese Nombre: ")
-	fmt.Scanln(&nombre)
-	fmt.Print("\nIngrese Ataque: ")
-	fmt.Scanln(&atk)
-	fmt.Print("\nIngrese Vida: ")
-	fmt.Scanln(&vida)
-	fmt.Print("\nSaldo Ryo: ")
-	fmt.Scanln(&ryo)
+type AkatsukiList struct {
+	Akatsukis map[int]Akatsuki
+	mu sync.Mutex
+}
 
-	miEquipo := &Equipo{
-		Nombre:   nombre,
-		Ataque:   atk,
-		Vida:     vida,
-		BolsaRyo: ryo,
+func (al *AkatsukiList) AddAkatsuki(akatsuki Akatsuki) {
+	al.mu.Lock()
+	defer al.mu.Unlock()
+	al.Akatsukis[akatsuki.Id] = akatsuki
+}
+
+func (al *AkatsukiList) GetAkatsuki(id int) (Akatsuki, bool) {
+	al.mu.Lock()
+	defer al.mu.Unlock()
+	akatsuki, exists := al.Akatsukis[id]
+	return akatsuki, exists
+}
+
+func (al *AkatsukiList) ReplaceAkatsuki(akatsuki Akatsuki)  {
+	al.mu.Lock()
+	defer al.mu.Unlock()
+	al.Akatsukis[akatsuki.Id] = akatsuki
+}
+
+func (al *AkatsukiList) ReplaceALLAkatsuki(akatsuki []Akatsuki)  {
+	al.mu.Lock()
+	defer al.mu.Unlock()
+	al.Akatsukis = make(map[int]Akatsuki)
+	for _, a := range akatsuki {
+		al.Akatsukis[a.Id] = a
 	}
+}
 
-	var mu sync.Mutex
-	esperaANBU := make(chan bool)
-
-	// 1. Conexión gRPC con Hokage (MV1)
-	connHokage, err := grpc.NewClient("hokage-vm:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("No se pudo conectar con Hokage: %v", err)
-	}
-	defer connHokage.Close()
-	clientHokage := pb.NewHokageClient(connHokage)
-
-	// 2. Conexión RabbitMQ con ANBU (MV2)
-	connRabbit, err := amqp.Dial("amqp://guest:guest@anbu-vm:5672/")
+func listeningInfoAnbu() {
+	// Conexión RabbitMQ para recibir información de Anbu
+	connRabbit, err := dialRabbitMQ()
 	if err != nil {
 		log.Fatalf("Error RabbitMQ: %v", err)
 	}
 	defer connRabbit.Close()
+	ch, err := connRabbit.Channel()
+	if err != nil {
+		log.Fatalf("Error al abrir canal RabbitMQ: %v", err)
+	}
+	defer ch.Close()
 
-	// 3. Conexión gRPC con Akatsuki (MV3)
-	connAkatsuki, err := grpc.NewClient("akatsuki-vm:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	q, err := ch.QueueDeclare(
+		"",    // nombre vacío → cola exclusiva
+		false,
+		true,
+		true,
+		false,
+		nil,
+	)
+	err = ch.QueueBind(
+		q.Name,
+		"",
+		"EquiposNinjaBrodcast",
+		false,
+		nil,
+	)
+
+	msgs, err := ch.Consume(
+		q.Name,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
+	for d := range msgs {
+		var data pbDataAkatsuki.DataAkatsukiRequest
+		err := proto.Unmarshal(d.Body, &data)
+		if err != nil {
+			log.Printf("Error al deserializar mensaje: %v", err)
+			continue
+		}
+		log.Printf("Mensaje recibido de Anbu: %s", data.Nombre)
+		// Aquí se puede agregar lógica para procesar el mensaje y actualizar el estado del equipo ninja
+	}
+}
+
+func mostrarEstadisticas(equipo *Equipo) {
+	log.Printf("Nombre: %s", 	   equipo.Nombre  )
+	log.Printf("Ataque: %d", 	   equipo.Ataque  )
+	log.Printf("Vida: %d", 		   equipo.Vida    )
+	log.Printf("Bolsa de Ryo: %.2f", equipo.BolsaRyo)
+}
+
+func solicitarLista(clientHokage pb.HokageClient, equipo *Equipo) {
+	
+}
+
+func solicitarRecompensa(clientHokage pb.HokageClient, equipo *Equipo) {
+
+}
+
+func atacarAkatsuki(clientAkatsuki pb.AkatsukiClient, equipo *Equipo) {
+	fmt.Println("Iniciando simulación de combate...")
+	var nombre string
+	fmt.Print("Ingrese Nombre del enemigo que desea atacar: ")
+	fmt.Scanln((&nombre))
+}
+
+func crearEquipoNinja() {
+	statsEquipo := &Equipo{
+		Nombre:   "",
+		Ataque:   0,
+		Vida:     0,
+		BolsaRyo: 0,
+	}
+	
+	log.Print("Ingrese el nombre de su equipo ninja: ")
+	fmt.Scanf("%s", &statsEquipo.Nombre)
+	log.Print("Ingrese el ataque de su equipo ninja: ")
+	fmt.Scanf("%d", &statsEquipo.Ataque)
+	log.Print("Ingrese la vida de su equipo ninja: ")
+	fmt.Scanf("%d", &statsEquipo.Vida)
+	log.Print("Ingrese la bolsa de ryo de su equipo ninja: ")
+	fmt.Scanf("%f", &statsEquipo.BolsaRyo)
+
+	log.Printf("Equipo ninja creado: %s", statsEquipo.Nombre)
+	log.Printf("Ataque: %d", statsEquipo.Ataque)
+	log.Printf("Vida: %d", statsEquipo.Vida)
+	log.Printf("Bolsa de Ryo: %.2f", statsEquipo.BolsaRyo)
+
+	go listeningInfoAnbu()
+
+	// ----------------------------- Conexiones ----------------------------- //
+	// 1. Conexión gRPC con Hokage (MV1)
+	connHokage, err := grpc.NewClient("" + os.Getenv("Hokage-IP"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("No se pudo conectar con Hokage: %v", err)
+		return
 	}
 	defer connHokage.Close()
+	clientHokage := pb.NewHokageClient(connHokage)
+
+	// 2. Conexión gRPC con Akatsuki (MV3)
+	connAkatsuki, err := grpc.NewClient("" + os.Getenv("Akatsuki-IP"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("No se pudo conectar con Akatsuki: %v", err)
+	}
+	defer connAkatsuki.Close()
 	clientAkatsuki := pb.NewAkatsukiClient(connAkatsuki)
 
-	ch, _ := connRabbit.Channel()
-	msgs, _ := ch.Consume("alertas_anbu", "", true, false, false, false, nil)
-
-	// Goroutine para escuchar a ANBU asíncronamente
-	go func() {
-		for d := range msgs {
-			mu.Lock()
-			// 1. Imprimimos el reporte en pantalla inmediatamente
-			fmt.Printf("\n[ANBU Alerta] %s\n", d.Body)
-			mu.Unlock()
-			esperaANBU <- true
-		}
-	}()
-
-	// 3. Bucle de interacción del usuario
+	// ------------------------------ Interfaz de Usuario ----------------------------- //
 	for {
 		fmt.Println("\n======= ACCIONES ========")
 		fmt.Println("1. Pedir Lista")
@@ -99,49 +202,28 @@ func main() {
 
 		switch opcion {
 		case 1:
-			res, _ := clientHokage.ObtenerListaAkatsukis(context.Background(), &pb.Empty{})
-			fmt.Println("Lista de Akatsukis")
-			for _, a := range res.Enemigos {
-				fmt.Printf("%s / Ataque = %s / Vida = %s / Estado = %s / Recompensa = %s\n", a.Nombre, a.Ataque, a.Vida, a.Estado, a.Recompensa)
-			}
-
+			// Lógica para pedir lista
+			solicitarLista(clientHokage, statsEquipo)
 		case 2:
-			// Aquí se llamaría a la entidad Akatsuki para iniciar combate [cite: 112]
-			fmt.Println("Iniciando simulación de combate...")
-			var nombre string
-			fmt.Print("Ingrese Nombre del enemigo que desea atacar: ")
-			fmt.Scanln((&nombre))
-			entrada := pb.DatosEquipo{
-				NombreEquipo: nombre,
-				Ataque:       int32(miEquipo.Ataque),
-				Vida:         int32(miEquipo.Vida),
-			}
-
-			mu.Lock()
-			res, err := clientAkatsuki.IniciarCombate(context.Background(), &entrada)
-			if err != nil {
-				fmt.Printf("Error de conexión con Akatsuki: %v\n", err)
-				continue
-			}
-			fmt.Printf("Estado de %s: %s\n", nombre, res.EstadoFinal)
-
-			if res.CombateIniciado == true {
-				fmt.Println("Comienza el Combate!!!")
-				mu.Unlock()
-				mu.Lock()
-			}
-
-			mu.Unlock()
-
+			// Lógica para atacar Akatsuki
+			atacarAkatsuki(clientAkatsuki, statsEquipo)
 		case 3:
-
-			return
-
+			// Lógica para solicitar recompensa
+			solicitarRecompensa(clientHokage, statsEquipo)
 		case 4:
-			fmt.Printf("Nombre: %s", miEquipo.Nombre)
-			fmt.Printf("Ataque: %s", miEquipo.Ataque)
-			fmt.Printf("Vida: %s", miEquipo.Vida)
-			fmt.Printf("Bolsa Ryo: %sM", miEquipo.BolsaRyo)
+			// Lógica para ver estadísticas
+			mostrarEstadisticas(statsEquipo)
+		default:
+			log.Println("Opción no válida")
 		}
 	}
+}
+
+
+func main() {
+	name := os.Getenv("NAME")
+	port := os.Getenv("PORT")
+	log.Printf("%s is running on port %s", name, port)
+
+	crearEquipoNinja()
 }

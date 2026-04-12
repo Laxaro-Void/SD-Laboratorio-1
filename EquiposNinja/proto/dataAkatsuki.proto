@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "./DataAkatsuki";
+package DataAkatsuki;
+
+// 
+service DataAkatsuki {
+  //
+  rpc SubmitAkatsuki(DataAkatsukiRequest) returns (DataAkatsukiResponse);
+}
+
+message DataAkatsukiRequest {
+  int32 id = 1;
+  string nombre = 2;
+  int32 ataque = 3;
+  int32 vida = 4;
+  string estado = 5;
+}
+
+message DataAkatsukiResponse {
+  bool success = 1;
+}

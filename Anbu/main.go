@@ -83,18 +83,22 @@ func initialize() {
 		return
 	}
 	defer ch.Close()
-	q, _ := ch.QueueDeclare(
-		"notificar_akatsuki_EquiposNinja", // name
-		false,  			  			   // durable
-		false,  			  			   // delete when unused
-		false,  			  			   // exclusive
-		false,  			  			   // no-wait
-		nil,    			  			   // arguments
+
+	err = ch.ExchangeDeclare(
+		"EquiposNinjaBrodcast", // name
+		"fanout",               // type
+		true,                   // durable
+		false,                  // auto-deleted
+		false,                  // internal
+		false,                  // no-wait
+		nil,                    // arguments
 	)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	log.Printf("Declared queue: %s", q.Name)
-
-	q, _ = ch.QueueDeclare(
+	q, _ := ch.QueueDeclare(
 		"notificar_akatsuki_Hokage", // name
 		false,  			  		 // durable
 		false,  			  		 // delete when unused
@@ -136,8 +140,8 @@ func notificarAkatsuki(data *pb.DataAkatsukiRequest) error {
 	}
 
 	err = ch.Publish(
-		"",     			  		       // exchange
-		"notificar_akatsuki_EquiposNinja", // routing key
+		"EquiposNinjaBrodcast",     	   // exchange
+		"", 							   // routing key
 		false,  			               // mandatory
 		false,  			               // immediate
 		amqp091.Publishing{

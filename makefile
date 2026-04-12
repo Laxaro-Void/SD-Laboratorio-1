@@ -1,9 +1,9 @@
 # Makefile #
 build-protoc:
-	protoc --go_out=Akatsuki/proto --go-grpc_out=Akatsuki/proto Akatsuki/proto/message.proto
+	protoc --go_out=Akatsuki/proto --go-grpc_out=Akatsuki/proto Akatsuki/proto/*.proto
 	protoc --go_out=Anbu/proto --go-grpc_out=Anbu/proto Anbu/proto/*.proto
-	protoc --go_out=EquiposNinja/proto --go-grpc_out=EquiposNinja/proto EquiposNinja/proto/message.proto
-	protoc --go_out=Hokage/proto --go-grpc_out=Hokage/proto Hokage/proto/message.proto
+	protoc --go_out=EquiposNinja/proto --go-grpc_out=EquiposNinja/proto EquiposNinja/proto/*.proto
+	protoc --go_out=Hokage/proto --go-grpc_out=Hokage/proto Hokage/proto/*.proto
 
 ## Production
 docker-akatsuki:
@@ -37,18 +37,22 @@ stop-docker-equiposninja:
 ## Localhost
 local-docker-akatsuki:
 	sudo docker-compose -f compose.localhost.yaml build akatsuki
-	sudo docker-compose -f compose.localhost.yaml run akatsuki
+	sudo docker-compose -f compose.localhost.yaml run --remove-orphans akatsuki
 
 local-docker-anbu:
-	sudo docker-compose -f compose.localhost.yaml up --build --remove-orphans anbu
+	sudo docker-compose -f compose.localhost.yaml build anbu
+	sudo docker-compose -f compose.localhost.yaml run --remove-orphans anbu
 
 local-docker-equiposninja:
 	sudo docker-compose -f compose.localhost.yaml build equiposninja
-	sudo docker-compose -f compose.localhost.yaml run equiposninja
+	read -p "Cantidad de Equipos Ninja: " cantidad; \
+	for i in $$(seq 1 $$cantidad); do \
+		nohup alacritty -e sudo docker-compose -f compose.localhost.yaml run --remove-orphans equiposninja & \
+	done
 
 local-docker-hokage:
 	sudo docker-compose -f compose.localhost.yaml build hokage
-	sudo docker-compose -f compose.localhost.yaml run hokage
+	sudo docker-compose -f compose.localhost.yaml run --remove-orphans hokage
 
 stop-local-docker-akatsuki:
 	sudo docker-compose -f compose.localhost.yaml stop akatsuki

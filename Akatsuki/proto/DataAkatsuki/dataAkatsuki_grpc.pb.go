@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.1
 // - protoc             v7.34.1
-// source: Anbu/proto/dataAkatsuki.proto
+// source: Akatsuki/proto/dataAkatsuki.proto
 
 package DataAkatsuki
 
@@ -117,5 +117,5 @@ var DataAkatsuki_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "Anbu/proto/dataAkatsuki.proto",
+	Metadata: "Akatsuki/proto/dataAkatsuki.proto",
 }

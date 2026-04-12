@@ -43,6 +43,8 @@ services:
   equiposninja:
     build:
       context: ./EquiposNinja
+    stdin_open: true
+    tty: true
     container_name: equiposninja
     ports:
       - "5003:5003"
