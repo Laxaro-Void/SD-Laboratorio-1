@@ -110,16 +110,36 @@ func (s *akatsukiData) actualizarEstado(id int, estado string) {
 
 }
 
+type equipoNinja struct {
+	Nombre string
+	Atk int
+	Vid int
+}
+
 // Comenzar Combate y Simulación
-func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkatsuki.IniciarCombateRequest) (*pbCombateAkatsuki.IniciarCombateResult, error) {
+func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkatsuki.IniciarCombateRequest, akatsukiData *akatsukiData) (*pbCombateAkatsuki.IniciarCombateResult, error) {
 	var ninja, rival int;
 	var turnoNinja bool;
+	// Extrae la data de los participantes
+	equipoNinja := equipoNinja{
+		Nombre: req.Equipo.NombreEquipo,
+		Atk: int(req.Equipo.Ataque),
+		Vid: int(req.Equipo.Vida),
+	}
+
+	akatsukiData.mu.Lock()
+	var enemigo Akatsuki
+	if req.IdObjetivo < int32(len(akatsukiData.enemigos)) {
+		enemigo = akatsukiData.enemigos[req.IdObjetivo]
+	} else {
+		akatsukiData.mu.Unlock()
+		return &pbCombateAkatsuki.IniciarCombateResult{Success: false}, fmt.Errorf("ID de Akatsuki no válido")
+	}
+	akatsukiData.mu.Unlock()
 
 	// Se calcula cual de los 2 equipos ataca primero
-	for ninja == rival {
-		ninja = rand.Intn(100)
-		rival = rand.Intn(100)
-	}
+	ninja = rand.Intn(100)
+	rival = rand.Intn(100)
 
 	if ninja > rival {
 		turnoNinja = true
@@ -131,12 +151,50 @@ func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkats
 	fmt.Println("==                LOGS DEL COMBATE                     ==")
 	fmt.Println("=========================================================")
 	fmt.Println("\nComienza Combate")
+	fmt.Println("Equipo ", equipoNinja.Nombre, "VS ", enemigo.Nombre)
 
-	if turnoNinja {
-		
+	result := pbCombateAkatsuki.IniciarCombateResult{Success: true}
+
+	for {
+		var mult float32
+		mult = 1.5 * rand.Float32() + 0.5
+
+		if turnoNinja {
+			ataque := int(float32(equipoNinja.Atk) * mult)
+			enemigo.Vida -= ataque
+			
+			fmt.Println("\nEquipo ", equipoNinja.Nombre, " atacó")
+			fmt.Println("", enemigo.Nombre, " recibió ", ataque, " de daño. Vida restante: ", enemigo.Vida)
+		} else {
+			var escape float32
+			escape = rand.Float32()
+			if escape <= 0.1 {
+				fmt.Printf("%s ha escapado del combate\n", enemigo.Nombre)
+				result.Success = false
+				break
+			}
+
+			ataque := int(float32(enemigo.Ataque) * mult)
+			equipoNinja.Vid -= ataque
+
+			fmt.Println("\n", enemigo.Nombre, " atacó")
+			fmt.Println("", equipoNinja.Nombre, " recibió ", ataque, " de daño. Vida restante: ", equipoNinja.Vid)
+		}
+
+		if equipoNinja.Vid < 0  {
+			fmt.Println("\n", enemigo.Nombre, "Derrotó al Equipo ", equipoNinja.Nombre, ", ha escapado")
+			result.Success = false
+			break
+		}
+
+		if enemigo.Vida < 0 {
+			fmt.Println("\nEquipo ", equipoNinja.Nombre, "Derrotó a ", enemigo.Nombre, ", ha sido capturado")
+			result.Success = true
+			break
+		}
 	}
 
-	return &pbCombateAkatsuki.IniciarCombateResult{Success: true}, nil
+	return &result, nil
 }
 
 func serverBackground() {
