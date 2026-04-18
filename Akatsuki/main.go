@@ -47,8 +47,9 @@ type akatsukiData struct {
 	enemigos []Akatsuki
 }
 
-type akatsukiServer struct {
+type combateAkatsukiServer struct {
 	pbCombateAkatsuki.UnimplementedCombateAkatsukiServer
+	akatsukiData *akatsukiData
 }
 
 // Generar Akatsuki de forma periódica
@@ -117,7 +118,7 @@ type equipoNinja struct {
 }
 
 // Comenzar Combate y Simulación
-func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkatsuki.IniciarCombateRequest, akatsukiData *akatsukiData) (*pbCombateAkatsuki.IniciarCombateResult, error) {
+func (s *combateAkatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkatsuki.IniciarCombateRequest) (*pbCombateAkatsuki.IniciarCombateResult, error) {
 	var ninja, rival int;
 	var turnoNinja bool;
 	// Extrae la data de los participantes
@@ -127,15 +128,15 @@ func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkats
 		Vid: int(req.Equipo.Vida),
 	}
 
-	akatsukiData.mu.Lock()
+	s.akatsukiData.mu.Lock()
 	var enemigo Akatsuki
-	if req.IdObjetivo < int32(len(akatsukiData.enemigos)) {
-		enemigo = akatsukiData.enemigos[req.IdObjetivo]
+	if req.IdObjetivo < int32(len(s.akatsukiData.enemigos)) {
+		enemigo = s.akatsukiData.enemigos[req.IdObjetivo]
 	} else {
-		akatsukiData.mu.Unlock()
+		s.akatsukiData.mu.Unlock()
 		return &pbCombateAkatsuki.IniciarCombateResult{Success: false}, fmt.Errorf("ID de Akatsuki no válido")
 	}
-	akatsukiData.mu.Unlock()
+	s.akatsukiData.mu.Unlock()
 
 	// Se calcula cual de los 2 equipos ataca primero
 	ninja = rand.Intn(100)
@@ -192,6 +193,8 @@ func (s *akatsukiServer) IniciarCombate(ctx context.Context, req *pbCombateAkats
 			result.Success = true
 			break
 		}
+
+		turnoNinja = !turnoNinja
 	}
 
 	return &result, nil
@@ -210,7 +213,7 @@ func serverBackground() {
 	}
 
 	grpcServer := grpc.NewServer()
-	pbCombateAkatsuki.RegisterCombateAkatsukiServer(grpcServer, &akatsukiServer{})
+	pbCombateAkatsuki.RegisterCombateAkatsukiServer(grpcServer, &combateAkatsukiServer{akatsukiData: server})
 	log.Printf("Hokage server is listening on port %s", os.Getenv("PORT"))
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
