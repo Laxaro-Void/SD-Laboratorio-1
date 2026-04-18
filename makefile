@@ -7,32 +7,32 @@ build-protoc:
 
 ## Production
 docker-akatsuki:
-	sudo docker-compose build akatsuki
-	sudo docker-compose run akatsuki
+	sudo docker-compose -f compose.yaml build akatsuki
+	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans akatsuki
 
 docker-anbu:
-	sudo docker-compose build anbu
-	sudo docker-compose run anbu
+	sudo docker-compose -f compose.yaml build anbu
+	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans anbu
 
 docker-equiposninja:
-	sudo docker-compose build equiposninja
-	sudo docker-compose run equiposninja
+	sudo docker-compose -f compose.yaml build equiposninja
+	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans equiposninja
 
 docker-hokage:
-	sudo docker-compose build hokage
-	sudo docker-compose run hokage
+	sudo docker-compose -f compose.yaml build hokage
+	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans hokage
 
 stop-docker-akatsuki:
-	sudo docker-compose stop akatsuki
+	sudo docker-compose -f compose.yaml stop akatsuki
 
 stop-docker-anbu:
-	sudo docker-compose stop anbu
+	sudo docker-compose -f compose.yaml stop anbu
 
 stop-docker-hokage:
-	sudo docker-compose stop hokage
+	sudo docker-compose -f compose.yaml stop hokage
 
 stop-docker-equiposninja:
-	sudo docker-compose stop equiposninja
+	sudo docker-compose -f compose.yaml stop equiposninja
 
 ## Localhost
 local-docker-akatsuki:
