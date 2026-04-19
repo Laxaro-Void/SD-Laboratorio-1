@@ -8,19 +8,19 @@ build-protoc:
 ## Production
 docker-akatsuki:
 	sudo docker-compose -f compose.yaml build akatsuki
-	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans akatsuki
+	sudo docker-compose -f compose.yaml run --service-ports akatsuki
 
 docker-anbu:
 	sudo docker-compose -f compose.yaml build anbu
-	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans anbu
+	sudo docker-compose -f compose.yaml run --service-ports anbu
 
 docker-equiposninja:
 	sudo docker-compose -f compose.yaml build equiposninja
-	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans equiposninja
+	sudo docker-compose -f compose.yaml run --service-ports equiposninja
 
 docker-hokage:
 	sudo docker-compose -f compose.yaml build hokage
-	sudo docker-compose -f compose.yaml run --use-aliases --remove-orphans hokage
+	sudo docker-compose -f compose.yaml run --service-ports hokage
 
 stop-docker-akatsuki:
 	sudo docker-compose -f compose.yaml stop akatsuki
