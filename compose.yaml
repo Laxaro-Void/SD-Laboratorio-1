@@ -41,10 +41,10 @@ services:
       context: ./EquiposNinja
     container_name: equiposninja
     ports:
-      - "5001:5001"
+      - "5001-5010:5001"
     environment:
       - "NAME=EquiposNinja"
-      - "PORT=5001"
+      - "PORT=5001-5010"
       - "Akatsuki-IP=10.35.168.35:5001"
       - "Anbu-IP=10.35.168.36:5001"
       - "Hokage-IP=10.35.168.38:5001"

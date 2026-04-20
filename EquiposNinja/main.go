@@ -194,7 +194,7 @@ func solicitarLista(client pbDataHokage.HokageClient, akatsukiList *AkatsukiList
 	}
 	log.Printf("Lista de Akatsukis:")
 	for _, akatsuki := range response.Akatsukis {
-		fmt.Printf("ID: %d / Nombre: %s / Ataque: %d / Vida: %d / Estado: %s / Recompensa: %d\n", akatsuki.Id, akatsuki.Nombre, akatsuki.Ataque, akatsuki.Vida, akatsuki.Estado, akatsuki.Recompensa)
+		fmt.Printf(">> Nombre: %s / Ataque: %d / Vida: %d / Estado: %s / Recompensa: %d\n", akatsuki.Nombre, akatsuki.Ataque, akatsuki.Vida, akatsuki.Estado, akatsuki.Recompensa)
 		akatsukiList.ReplaceAkatsuki(Akatsuki{Id: int(akatsuki.Id), Nombre: akatsuki.Nombre, Ataque: int(akatsuki.Ataque), Vida: int(akatsuki.Vida), Estado: akatsuki.Estado, isComunicated: false})
 	}
 }
