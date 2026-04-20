@@ -27,22 +27,23 @@ message ListaAkatsukis {
 }
 
 message DatosEquipo {
-    string nombreEquipo = 1;
+    string nombre_equipo = 1;
     int32 ataque = 2;
     int32 vida = 3;
 }
 
 message EstadoCombate {
-    string estadoFinal = 1;
-    bool combateIniciado = 2;
+    string estado_final = 1;
+    bool combate_iniciado = 2;
 }
 
 message SolicitudRecompensa {
-    string nombreEquipo = 1;
-    string nombreAkatsuki = 2;
+    string nombre_equipo = 1;
+    int32 id_akatsuki = 2;
+    string nombre_akatsuki = 3;
 }
 
 message ConfirmacionPago {
     string mensaje = 1;
-    float ryoPagados = 2;
+    int32 ryo_pagados = 2;
 }

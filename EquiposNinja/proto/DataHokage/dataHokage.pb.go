@@ -187,7 +187,7 @@ func (x *ListaAkatsukis) GetAkatsukis() []*AkatsukiInfo {
 
 type DatosEquipo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	NombreEquipo  string                 `protobuf:"bytes,1,opt,name=nombreEquipo,proto3" json:"nombreEquipo,omitempty"`
+	NombreEquipo  string                 `protobuf:"bytes,1,opt,name=nombre_equipo,json=nombreEquipo,proto3" json:"nombre_equipo,omitempty"`
 	Ataque        int32                  `protobuf:"varint,2,opt,name=ataque,proto3" json:"ataque,omitempty"`
 	Vida          int32                  `protobuf:"varint,3,opt,name=vida,proto3" json:"vida,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -247,8 +247,8 @@ func (x *DatosEquipo) GetVida() int32 {
 
 type EstadoCombate struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	EstadoFinal     string                 `protobuf:"bytes,1,opt,name=estadoFinal,proto3" json:"estadoFinal,omitempty"`
-	CombateIniciado bool                   `protobuf:"varint,2,opt,name=combateIniciado,proto3" json:"combateIniciado,omitempty"`
+	EstadoFinal     string                 `protobuf:"bytes,1,opt,name=estado_final,json=estadoFinal,proto3" json:"estado_final,omitempty"`
+	CombateIniciado bool                   `protobuf:"varint,2,opt,name=combate_iniciado,json=combateIniciado,proto3" json:"combate_iniciado,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -299,8 +299,9 @@ func (x *EstadoCombate) GetCombateIniciado() bool {
 
 type SolicitudRecompensa struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	NombreEquipo   string                 `protobuf:"bytes,1,opt,name=nombreEquipo,proto3" json:"nombreEquipo,omitempty"`
-	NombreAkatsuki string                 `protobuf:"bytes,2,opt,name=nombreAkatsuki,proto3" json:"nombreAkatsuki,omitempty"`
+	NombreEquipo   string                 `protobuf:"bytes,1,opt,name=nombre_equipo,json=nombreEquipo,proto3" json:"nombre_equipo,omitempty"`
+	IdAkatsuki     int32                  `protobuf:"varint,2,opt,name=id_akatsuki,json=idAkatsuki,proto3" json:"id_akatsuki,omitempty"`
+	NombreAkatsuki string                 `protobuf:"bytes,3,opt,name=nombre_akatsuki,json=nombreAkatsuki,proto3" json:"nombre_akatsuki,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -342,6 +343,13 @@ func (x *SolicitudRecompensa) GetNombreEquipo() string {
 	return ""
 }
 
+func (x *SolicitudRecompensa) GetIdAkatsuki() int32 {
+	if x != nil {
+		return x.IdAkatsuki
+	}
+	return 0
+}
+
 func (x *SolicitudRecompensa) GetNombreAkatsuki() string {
 	if x != nil {
 		return x.NombreAkatsuki
@@ -352,7 +360,7 @@ func (x *SolicitudRecompensa) GetNombreAkatsuki() string {
 type ConfirmacionPago struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Mensaje       string                 `protobuf:"bytes,1,opt,name=mensaje,proto3" json:"mensaje,omitempty"`
-	RyoPagados    float32                `protobuf:"fixed32,2,opt,name=ryoPagados,proto3" json:"ryoPagados,omitempty"`
+	RyoPagados    int32                  `protobuf:"varint,2,opt,name=ryo_pagados,json=ryoPagados,proto3" json:"ryo_pagados,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -394,7 +402,7 @@ func (x *ConfirmacionPago) GetMensaje() string {
 	return ""
 }
 
-func (x *ConfirmacionPago) GetRyoPagados() float32 {
+func (x *ConfirmacionPago) GetRyoPagados() int32 {
 	if x != nil {
 		return x.RyoPagados
 	}
@@ -418,21 +426,22 @@ const file_EquiposNinja_proto_dataHokage_proto_rawDesc = "" +
 	"recompensa\x18\x06 \x01(\x05R\n" +
 	"recompensa\"H\n" +
 	"\x0eListaAkatsukis\x126\n" +
-	"\takatsukis\x18\x01 \x03(\v2\x18.DataHokage.AkatsukiInfoR\takatsukis\"]\n" +
-	"\vDatosEquipo\x12\"\n" +
-	"\fnombreEquipo\x18\x01 \x01(\tR\fnombreEquipo\x12\x16\n" +
+	"\takatsukis\x18\x01 \x03(\v2\x18.DataHokage.AkatsukiInfoR\takatsukis\"^\n" +
+	"\vDatosEquipo\x12#\n" +
+	"\rnombre_equipo\x18\x01 \x01(\tR\fnombreEquipo\x12\x16\n" +
 	"\x06ataque\x18\x02 \x01(\x05R\x06ataque\x12\x12\n" +
-	"\x04vida\x18\x03 \x01(\x05R\x04vida\"[\n" +
-	"\rEstadoCombate\x12 \n" +
-	"\vestadoFinal\x18\x01 \x01(\tR\vestadoFinal\x12(\n" +
-	"\x0fcombateIniciado\x18\x02 \x01(\bR\x0fcombateIniciado\"a\n" +
-	"\x13SolicitudRecompensa\x12\"\n" +
-	"\fnombreEquipo\x18\x01 \x01(\tR\fnombreEquipo\x12&\n" +
-	"\x0enombreAkatsuki\x18\x02 \x01(\tR\x0enombreAkatsuki\"L\n" +
+	"\x04vida\x18\x03 \x01(\x05R\x04vida\"]\n" +
+	"\rEstadoCombate\x12!\n" +
+	"\festado_final\x18\x01 \x01(\tR\vestadoFinal\x12)\n" +
+	"\x10combate_iniciado\x18\x02 \x01(\bR\x0fcombateIniciado\"\x84\x01\n" +
+	"\x13SolicitudRecompensa\x12#\n" +
+	"\rnombre_equipo\x18\x01 \x01(\tR\fnombreEquipo\x12\x1f\n" +
+	"\vid_akatsuki\x18\x02 \x01(\x05R\n" +
+	"idAkatsuki\x12'\n" +
+	"\x0fnombre_akatsuki\x18\x03 \x01(\tR\x0enombreAkatsuki\"M\n" +
 	"\x10ConfirmacionPago\x12\x18\n" +
-	"\amensaje\x18\x01 \x01(\tR\amensaje\x12\x1e\n" +
-	"\n" +
-	"ryoPagados\x18\x02 \x01(\x02R\n" +
+	"\amensaje\x18\x01 \x01(\tR\amensaje\x12\x1f\n" +
+	"\vryo_pagados\x18\x02 \x01(\x05R\n" +
 	"ryoPagados2\xa5\x01\n" +
 	"\x06Hokage\x12F\n" +
 	"\x15ObtenerListaAkatsukis\x12\x11.DataHokage.Empty\x1a\x1a.DataHokage.ListaAkatsukis\x12S\n" +

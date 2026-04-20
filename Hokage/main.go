@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"sync"
 	"time"
-	"fmt"
 
 	pbDataAkatsuki "Hokage/proto/DataAkatsuki"
 	pbDataHokage "Hokage/proto/DataHokage"
@@ -24,32 +24,36 @@ type Akatsuki struct {
 	Vida       int
 	Estado     string // "Localizado", "En Combate", "Capturado"
 	Recompensa int    // Recompensa asociada
+	EquipoCapturador string
 }
 
+/*
+	AkatsukiList struct
+	- Almacena de manera protegida informacion de los Akatsukis detectados.
+*/
 type AkatsukiList struct {
-	Akatsukis map[int]Akatsuki
+	Akatsukis map[string]Akatsuki
 	mu        sync.Mutex
 }
 
 func (al *AkatsukiList) AddAkatsuki(akatsuki Akatsuki) {
 	al.mu.Lock()
 	defer al.mu.Unlock()
-	al.Akatsukis[akatsuki.Id] = akatsuki
+	al.Akatsukis[akatsuki.Nombre] = akatsuki
 }
 
-func (al *AkatsukiList) GetAkatsuki(id int) (Akatsuki, bool) {
+func (al *AkatsukiList) GetAkatsuki(nombre string) (Akatsuki, bool) {
 	al.mu.Lock()
 	defer al.mu.Unlock()
-	akatsuki, exists := al.Akatsukis[id]
+	akatsuki, exists := al.Akatsukis[nombre]
 	return akatsuki, exists
 }
 
-func (al *AkatsukiList) ReplaceEstado(id int, estado string) {
+func (al *AkatsukiList) ReplaceAkatsuki(nombre string, akatsuki Akatsuki) {
 	al.mu.Lock()
 	defer al.mu.Unlock()
-	if akatsuki, exists := al.Akatsukis[id]; exists {
-		akatsuki.Estado = estado
-		al.Akatsukis[id] = akatsuki
+	if _, exists := al.Akatsukis[nombre]; exists {
+		al.Akatsukis[nombre] = akatsuki
 	}
 }
 
@@ -72,6 +76,11 @@ type Hokage struct {
 	hokageContent *HokageContent
 }
 
+/*
+	dialRabbitMQ() (*amqp091.Connection, error)
+	- Intenta establecer una conexión con RabbitMQ, reintentando varias veces en caso de fallo.
+	- Retorna la conexión establecida o un error si no se pudo conectar después de varios intentos.
+*/
 func dialRabbitMQ() (*amqp091.Connection, error) {
 	var maxAttempts = 10
 	var attempt int
@@ -89,7 +98,10 @@ func dialRabbitMQ() (*amqp091.Connection, error) {
 }
 
 /*
-	Escucha información de Anbu
+	listenInformacionAnbu()
+- Escucha mensajes en la cola "notificar_akatsuki_Hokage" de RabbitMQ.
+- En cada mensaje recibido, deserializa el contenido y muestra la información del Akatsuki detectado.
+- Envía una notificación a Hokage y Equipos Ninja con la información del Akatsuki detectado para que puedan actualizar su información local.
 */
 func (s *HokageContent) listenInformacionAnbu() {
 	connRabbit, err := dialRabbitMQ()
@@ -120,32 +132,57 @@ func (s *HokageContent) listenInformacionAnbu() {
 			log.Printf("Error al deserializar mensaje: %v", err)
 			continue
 		}
-		log.Printf("Mensaje recibido de Anbu: %d", data.Id)
-
+		
 		akatsuki := Akatsuki{
 			Id:     int(data.Id),
 			Nombre: data.Nombre,
 			Ataque: int(data.Ataque),
 			Vida:   int(data.Vida),
 			Estado: data.Estado,
+			EquipoCapturador: data.EquipoCapturador,
+		}
+		
+		if akatsuki.Estado == "CLEAR" {
+			s.AkatsukisList.Akatsukis = make(map[string]Akatsuki)
+			log.Println("Detectando nuevos Akatsukis, limpiando lista...")
+			continue
 		}
 
-		if _, exists := s.AkatsukisList.GetAkatsuki(akatsuki.Id); exists {
-			// Si el Akatsuki ya existe, actualizamos su estado
-			s.AkatsukisList.ReplaceEstado(akatsuki.Id, akatsuki.Estado)
+		log.Println("Mensaje recibido de Anbu")
 
-		} else {
-			// Si el Akatsuki no existe, lo agregamos a la lista y le asignamos una recompensa
+		akatsukiActual, exists := s.AkatsukisList.GetAkatsuki(akatsuki.Nombre);
+
+		// Si Akatsuki no existe, se asigna recompensa y se registra.
+		if !exists {
+			log.Printf("Nuevo Akatsuki detectado: %s, asignando recompensa y registrando", akatsuki.Nombre)
 			akatsuki.Recompensa = asignarRecompensa(akatsuki)
 			s.AkatsukisList.AddAkatsuki(akatsuki)
+			continue
 		}
+
+		// Si Akatsuki existe, pero fue capturado y reclamada la recompesa, se le asigna nueva recompesa y vuelve a estar Localizado.
+		if akatsukiActual.Estado == "Capturado" && akatsukiActual.EquipoCapturador == "" {
+			log.Printf("Se a detectado nuevamente al Akatsuki %s... Asignando orden de captura!", akatsuki.Nombre)
+			akatsuki.Recompensa = asignarRecompensa(akatsuki)
+			s.AkatsukisList.ReplaceAkatsuki(akatsuki.Nombre, akatsuki)
+			continue
+		}
+
+		// Entonces se mantiene la recompensa y actualiza el estado.
+		log.Printf("Actualizando estado del Akatsuki %s a %s", akatsuki.Nombre, akatsuki.Estado)
+		akatsuki.Recompensa = akatsukiActual.Recompensa
+		s.AkatsukisList.ReplaceAkatsuki(akatsuki.Nombre, akatsuki)
 	}
 }
 
 /*
+	rpc ObtenerListaAkatsukis(ctx context.Context, _ *pbDataHokage.Empty) (*pbDataHokage.ListaAkatsukis, error)
 	A.K.A. Mostrar Lista de Akatsukis
+
+	- Entrega la lista de Akatsukis detectados con su información actualizada a quien lo solicite.
 */
 func (s *Hokage) ObtenerListaAkatsukis(ctx context.Context, _ *pbDataHokage.Empty) (*pbDataHokage.ListaAkatsukis, error) {
+	log.Println("Solicitud de lista de Akatsukis recibida, enviando...")
 	akatsukiList := s.hokageContent.AkatsukisList.GetAllAkatsukis()
 	data := make([]*pbDataHokage.AkatsukiInfo, 0, len(akatsukiList))
 	for _, akatsuki := range akatsukiList {
@@ -159,18 +196,64 @@ func (s *Hokage) ObtenerListaAkatsukis(ctx context.Context, _ *pbDataHokage.Empt
 		})
 	}
 	
+	log.Println("Solicitud enviada!")
 	return &pbDataHokage.ListaAkatsukis{Akatsukis: data}, nil
 }
 
+/*
+	rpc ReclamarRecompensa(ctx context.Context, req *pbDataHokage.SolicitudRecompensa) (*pbDataHokage.ConfirmacionPago, error)
+	
+	- Permite a los Equipos Ninja reclamar la recompensa por capturar a un Akatsuki, siempre y cuando el Akatsuki esté en estado "Capturado" y no haya sido reclamada la recompensa por otro equipo.
+*/
 func (s *Hokage) ReclamarRecompensa(ctx context.Context, req *pbDataHokage.SolicitudRecompensa) (*pbDataHokage.ConfirmacionPago, error) {
+	akatsuki, exists := s.hokageContent.AkatsukisList.GetAkatsuki(req.NombreAkatsuki)
+	// No existe el Akatsuki
+	if !exists {
+		log.Printf("Akatsuki %s no encontrado para reclamar recompensa", req.NombreAkatsuki)
+		return &pbDataHokage.ConfirmacionPago{}, fmt.Errorf("Akatsuki %s no encontrado para reclamar recompensa", req.NombreAkatsuki)
+	}
 
-	return &pbDataHokage.ConfirmacionPago{}, nil
+	// El Akatsuki no está en estado "Capturado"
+	if akatsuki.Estado != "Capturado" {
+		log.Printf("Akatsuki %s no está en estado 'Capturado' para reclamar recompensa", req.NombreAkatsuki)
+		return &pbDataHokage.ConfirmacionPago{}, fmt.Errorf("Akatsuki %s no está en estado 'Capturado' para reclamar recompensa", req.NombreAkatsuki)
+	}
+
+	// El Akatsuki fue capturado pero la recompensa ya fue reclamada
+	if akatsuki.Estado == "Capturado" && akatsuki.EquipoCapturador == "" {
+		log.Printf("Akatsuki %s fue capturado pero la recompensa ya fue reclamada, no puede ser reclamada por el equipo %s", req.NombreAkatsuki, req.NombreEquipo)
+		return &pbDataHokage.ConfirmacionPago{}, fmt.Errorf("Akatsuki %s fue capturado pero la recompensa ya fue reclamada, no puede ser reclamada", req.NombreAkatsuki)
+	}
+
+	// El Akatsuki fue capturado por otro equipo
+	if akatsuki.EquipoCapturador != "" && akatsuki.EquipoCapturador != req.NombreEquipo {
+		log.Printf("Akatsuki %s ya fue capturado por el equipo %s, no puede ser reclamado por el equipo %s", req.NombreAkatsuki, akatsuki.EquipoCapturador, req.NombreEquipo)
+		return &pbDataHokage.ConfirmacionPago{}, fmt.Errorf("Akatsuki %s ya fue capturado por el equipo %s, no puede ser reclamado", req.NombreAkatsuki, akatsuki.EquipoCapturador)
+	}
+
+	log.Printf("Recompensa de %d ryo reclamada por equipo %s por capturar a %s", akatsuki.Recompensa, req.NombreEquipo, akatsuki.Nombre)
+
+	data := &pbDataHokage.ConfirmacionPago{
+		Mensaje: "Recompensa reclamada exitosamente",
+		RyoPagados: int32(akatsuki.Recompensa),
+	}
+
+	// Actualizar estado del Akatsuki a "Capturado" y desasociar el equipo capturador
+	akatsuki.EquipoCapturador = ""
+	s.hokageContent.AkatsukisList.ReplaceAkatsuki(akatsuki.Nombre, akatsuki)
+
+	return data, nil
 }
 
+/*
+	serverBackground()
+
+	- Inicializa el servidor gRPC de Hokage y la tarea de escuchar mensajes de RabbitMQ en segundo plano.
+*/
 func serverBackground() {
 	hokageContent := &HokageContent{
 		AkatsukisList: &AkatsukiList{
-			Akatsukis: make(map[int]Akatsuki),
+			Akatsukis: make(map[string]Akatsuki),
 		},
 	}
 
@@ -189,11 +272,19 @@ func serverBackground() {
 	}
 }
 
+/*
+	asignarRecompensa(Akatsuki Akatsuki) int
+	- Calcula la recompensa para un Akatsuki basado en sus atributos de ataque y vida.
+*/
 func asignarRecompensa(Akatsuki Akatsuki) int {
 	// Recompensa base de 1000, más 10 por cada punto de ataque y vida
 	return 1000 + (Akatsuki.Ataque * 10) + (Akatsuki.Vida * 10)
 }
 
+
+/*
+	mian()
+*/
 func main() {
 	// Creacion de instancia de servidor
 	name := os.Getenv("NAME")

@@ -1,10 +1,8 @@
 package main
 
 import (
-	// "context"
 	"fmt"
 	"log"
-	// "net"
 	"os"
 	"time"
 
@@ -13,15 +11,11 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type Akatsukis struct {
-	Id int
-	Name string
-	Ataque int
-	Vida int
-	Estado string
-	isComunicated bool
-}
-
+/*
+	dialRabbitMQ() (*amqp091.Connection, error)
+	- Intenta establecer una conexión con RabbitMQ, reintentando varias veces en caso de fallo.
+	- Retorna la conexión establecida o un error si no se pudo conectar después de varios intentos.
+*/
 func dialRabbitMQ() (*amqp091.Connection, error) {
 	var maxAttempts = 10
 	var attempt int
@@ -38,17 +32,12 @@ func dialRabbitMQ() (*amqp091.Connection, error) {
 	return nil, fmt.Errorf("could not connect to RabbitMQ after %d attempts", maxAttempts)
 }
 
-/**
-* Crea el canal "notificar_akatsuki" en RabbitMQ para enviar notificaciones a Akatsuki
-**/
-func initialize() {
-	conn, err := dialRabbitMQ()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	defer conn.Close()
-	
+/*
+	initialize(conn *amqp091.Connection)
+- Declara los intercambios y colas necesarias en RabbitMQ para la comunicación entre Anbu, Hokage y Equipos Ninja.
+- Se asegura de que las colas "notificar_akatsuki_Hokage" y "localizar_akatsuki" estén declaradas y listas para su uso.
+*/
+func initialize(conn *amqp091.Connection) {
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatal(err)
@@ -56,6 +45,7 @@ func initialize() {
 	}
 	defer ch.Close()
 
+	// Intercambiador, Equipos Ninjas se subscriben a este punto con sus colas propias.
 	err = ch.ExchangeDeclare(
 		"EquiposNinjaBrodcast", // name
 		"fanout",               // type
@@ -70,6 +60,7 @@ func initialize() {
 		return
 	}
 
+	// Colas para comunicación directa entre Anbu y Hokage
 	q, _ := ch.QueueDeclare(
 		"notificar_akatsuki_Hokage", // name
 		false,  			  		 // durable
@@ -81,6 +72,7 @@ func initialize() {
 
 	log.Printf("Declared queue: %s", q.Name)
 
+	// Cola para comunicación directa entre Anbu y Akatsuki
 	q, _ = ch.QueueDeclare(
 		"localizar_akatsuki", // name
 		false,  			  		 // durable
@@ -93,13 +85,11 @@ func initialize() {
 	log.Printf("Declared queue: %s", q.Name)
 }
 
-func notificarAkatsuki(data *pb.DataAkatsukiRequest) error {
-	conn, err := dialRabbitMQ()
-	if err != nil {
-		return err
-	}
-	defer conn.Close()
-	
+/*
+	notificarAkatsuki(data *pb.DataAkatsukiRequest, conn *amqp091.Connection) error
+- Envia el Akatsuki recivido al intercambiador y a Hokage a través de RabbitMQ.
+*/
+func notificarAkatsuki(data *pb.DataAkatsukiRequest, conn *amqp091.Connection) error {
 	ch, err := conn.Channel()
 	if err != nil {
 		return err
@@ -137,21 +127,18 @@ func notificarAkatsuki(data *pb.DataAkatsukiRequest) error {
 		return err
 	}
 
-	log.Printf("Sent: %+v\n", data.Id)
+	log.Println("Notificación enviada a Hokage y Equipos Ninja")
+
 	return nil
 }
 
-/**
-* Recibe Akattsuki desde RabbitMQ desde el canal "localizar_akatsuki"
-* Origen: Akatsuki 
-**/
-func localizarAkatsuki() {
-	conn, err := dialRabbitMQ()
-	if err != nil {
-		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
-	}
-	defer conn.Close()
-
+/*
+	localizarAkatsuki(conn *amqp091.Connection)
+- Escucha mensajes en la cola "localizar_akatsuki" de RabbitMQ.
+- En cada mensaje recibido, deserializa el contenido y muestra la información del Akatsuki detectado.
+- Envía una notificación a Hokage y Equipos Ninja con la información del Akatsuki detectado para que puedan actualizar su información local.
+*/
+func localizarAkatsuki(conn *amqp091.Connection) {
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
@@ -181,12 +168,15 @@ func localizarAkatsuki() {
         }
 
 		// Work Here
-        log.Printf("Received: %+v\n", data.Id)
-		notificarAkatsuki(&data)
+        log.Printf("Detectado estado Akatsuki >> Nombre: %s, Estado: %s\n", data.Nombre, data.Estado)
+		notificarAkatsuki(&data, conn)
     }
 }
 
-
+/*
+	main()
+- Inicializa la conexión con RabbitMQ, incializa el nodo y la tarea de escuchar mensajes de RabbitMQ.
+*/
 func main() {
 	name := os.Getenv("NAME")
 	port := os.Getenv("PORT")
@@ -194,11 +184,17 @@ func main() {
 
 	forever := make(chan bool)
 
-	initialize()
+	conn, err := dialRabbitMQ()
+	if err != nil {
+		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
+	}
+	defer conn.Close()
 
-	// Tarea de Recivir mensajes de RabbitMQ desde Akatsuki
-	go localizarAkatsuki()
+	initialize(conn)
 
-	log.Printf("Waiting for messages. To exit press CTRL+C")
+	// Tarea de Recibir mensajes de RabbitMQ desde Akatsuki
+	go localizarAkatsuki(conn)
+
+	log.Printf("To exit press CTRL+C")
 	<-forever
 }

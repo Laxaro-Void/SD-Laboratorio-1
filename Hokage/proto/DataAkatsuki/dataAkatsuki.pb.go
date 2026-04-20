@@ -22,14 +22,15 @@ const (
 )
 
 type DataAkatsukiRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Nombre        string                 `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
-	Ataque        int32                  `protobuf:"varint,3,opt,name=ataque,proto3" json:"ataque,omitempty"`
-	Vida          int32                  `protobuf:"varint,4,opt,name=vida,proto3" json:"vida,omitempty"`
-	Estado        string                 `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Id               int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Nombre           string                 `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
+	Ataque           int32                  `protobuf:"varint,3,opt,name=ataque,proto3" json:"ataque,omitempty"`
+	Vida             int32                  `protobuf:"varint,4,opt,name=vida,proto3" json:"vida,omitempty"`
+	Estado           string                 `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
+	EquipoCapturador string                 `protobuf:"bytes,6,opt,name=equipo_capturador,json=equipoCapturador,proto3" json:"equipo_capturador,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *DataAkatsukiRequest) Reset() {
@@ -97,6 +98,13 @@ func (x *DataAkatsukiRequest) GetEstado() string {
 	return ""
 }
 
+func (x *DataAkatsukiRequest) GetEquipoCapturador() string {
+	if x != nil {
+		return x.EquipoCapturador
+	}
+	return ""
+}
+
 type DataAkatsukiResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -145,13 +153,14 @@ var File_Hokage_proto_dataAkatsuki_proto protoreflect.FileDescriptor
 
 const file_Hokage_proto_dataAkatsuki_proto_rawDesc = "" +
 	"\n" +
-	"\x1fHokage/proto/dataAkatsuki.proto\x12\fDataAkatsuki\"\x81\x01\n" +
+	"\x1fHokage/proto/dataAkatsuki.proto\x12\fDataAkatsuki\"\xae\x01\n" +
 	"\x13DataAkatsukiRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x16\n" +
 	"\x06nombre\x18\x02 \x01(\tR\x06nombre\x12\x16\n" +
 	"\x06ataque\x18\x03 \x01(\x05R\x06ataque\x12\x12\n" +
 	"\x04vida\x18\x04 \x01(\x05R\x04vida\x12\x16\n" +
-	"\x06estado\x18\x05 \x01(\tR\x06estado\"0\n" +
+	"\x06estado\x18\x05 \x01(\tR\x06estado\x12+\n" +
+	"\x11equipo_capturador\x18\x06 \x01(\tR\x10equipoCapturador\"0\n" +
 	"\x14DataAkatsukiResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccessB\x10Z\x0e./DataAkatsukib\x06proto3"
 

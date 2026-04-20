@@ -15,6 +15,7 @@ message DataAkatsukiRequest {
   int32 ataque = 3;
   int32 vida = 4;
   string estado = 5;
+  string equipo_capturador = 6;
 }
 
 message DataAkatsukiResponse {

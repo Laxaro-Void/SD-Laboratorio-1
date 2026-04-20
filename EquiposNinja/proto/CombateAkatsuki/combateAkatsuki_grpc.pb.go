@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CombateAkatsuki_IniciarCombate_FullMethodName = "/CombateAkatsuki.CombateAkatsuki/IniciarCombate"
+	CombateAkatsuki_IniciarCombate_FullMethodName  = "/CombateAkatsuki.CombateAkatsuki/IniciarCombate"
+	CombateAkatsuki_LiberarAkatsuki_FullMethodName = "/CombateAkatsuki.CombateAkatsuki/LiberarAkatsuki"
 )
 
 // CombateAkatsukiClient is the client API for CombateAkatsuki service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CombateAkatsukiClient interface {
 	IniciarCombate(ctx context.Context, in *IniciarCombateRequest, opts ...grpc.CallOption) (*IniciarCombateResult, error)
+	LiberarAkatsuki(ctx context.Context, in *LiberarAkatsukiRequest, opts ...grpc.CallOption) (*LiberarAkatsukiResult, error)
 }
 
 type combateAkatsukiClient struct {
@@ -47,11 +49,22 @@ func (c *combateAkatsukiClient) IniciarCombate(ctx context.Context, in *IniciarC
 	return out, nil
 }
 
+func (c *combateAkatsukiClient) LiberarAkatsuki(ctx context.Context, in *LiberarAkatsukiRequest, opts ...grpc.CallOption) (*LiberarAkatsukiResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LiberarAkatsukiResult)
+	err := c.cc.Invoke(ctx, CombateAkatsuki_LiberarAkatsuki_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CombateAkatsukiServer is the server API for CombateAkatsuki service.
 // All implementations must embed UnimplementedCombateAkatsukiServer
 // for forward compatibility.
 type CombateAkatsukiServer interface {
 	IniciarCombate(context.Context, *IniciarCombateRequest) (*IniciarCombateResult, error)
+	LiberarAkatsuki(context.Context, *LiberarAkatsukiRequest) (*LiberarAkatsukiResult, error)
 	mustEmbedUnimplementedCombateAkatsukiServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedCombateAkatsukiServer struct{}
 
 func (UnimplementedCombateAkatsukiServer) IniciarCombate(context.Context, *IniciarCombateRequest) (*IniciarCombateResult, error) {
 	return nil, status.Error(codes.Unimplemented, "method IniciarCombate not implemented")
+}
+func (UnimplementedCombateAkatsukiServer) LiberarAkatsuki(context.Context, *LiberarAkatsukiRequest) (*LiberarAkatsukiResult, error) {
+	return nil, status.Error(codes.Unimplemented, "method LiberarAkatsuki not implemented")
 }
 func (UnimplementedCombateAkatsukiServer) mustEmbedUnimplementedCombateAkatsukiServer() {}
 func (UnimplementedCombateAkatsukiServer) testEmbeddedByValue()                         {}
@@ -104,6 +120,24 @@ func _CombateAkatsuki_IniciarCombate_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CombateAkatsuki_LiberarAkatsuki_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LiberarAkatsukiRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CombateAkatsukiServer).LiberarAkatsuki(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CombateAkatsuki_LiberarAkatsuki_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CombateAkatsukiServer).LiberarAkatsuki(ctx, req.(*LiberarAkatsukiRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CombateAkatsuki_ServiceDesc is the grpc.ServiceDesc for CombateAkatsuki service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var CombateAkatsuki_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IniciarCombate",
 			Handler:    _CombateAkatsuki_IniciarCombate_Handler,
+		},
+		{
+			MethodName: "LiberarAkatsuki",
+			Handler:    _CombateAkatsuki_LiberarAkatsuki_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
